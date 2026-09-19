@@ -75,6 +75,19 @@ for (const name of Object.keys(STRATEGIES)) {
 if (Q.every((q) => R.pointwise?.[q.qid] && R.listwise?.[q.qid])) {  // offline: multiply pointwise and listwise probabilities, no extra calls
   rows.push({ ...metrics("pointwise × listwise (offline)", (q) => { const p = R.pointwise[q.qid].scores, l = R.listwise[q.qid].scores; return [...q.candidates].sort((a, b) => p[b] * l[b] - p[a] * l[a]).indexOf(q.gold) + 1; }), calls: "", "input tokens": "", cost: "", "s/query": "" });
 }
-const md = `# CLERC re-ranking (${Q.length} queries × 30 BM25 candidates, model ${MODEL})\n\n${table(rows)}\n`;
+// paired bootstrap over queries: is each strategy's MRR really different from the cookbook replica's?
+const boot = [];
+if (Q.every((q) => R.pointwise?.[q.qid])) {
+  const rr = (name, q) => 1 / (R[name][q.qid].ranking.indexOf(q.gold) + 1);
+  let seed = 1; const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x80000000; };
+  for (const name of Object.keys(STRATEGIES).filter((n) => n !== "pointwise" && Q.every((q) => R[n]?.[q.qid]))) {
+    const d = Q.map((q) => rr(name, q) - rr("pointwise", q)), B = 4000, means = [];
+    for (let b = 0; b < B; b++) { let s = 0; for (let i = 0; i < d.length; i++) s += d[Math.floor(rnd() * d.length)]; means.push(s / d.length); }
+    means.sort((a, b) => a - b);
+    const mean = d.reduce((s, x) => s + x, 0) / d.length, lo = means[Math.floor(B * 0.025)], hi = means[Math.floor(B * 0.975)];
+    boot.push({ strategy: name, "ΔMRR vs pointwise": (mean >= 0 ? "+" : "") + mean.toFixed(3), "95% CI": `[${lo.toFixed(3)}, ${hi.toFixed(3)}]`, "calls vs pointwise": `${(R[name][Q[0].qid].calls / R.pointwise[Q[0].qid].calls * 100).toFixed(0)}%`, "P(Δ ≤ 0)": (means.filter((m) => m <= 0).length / B).toFixed(3) });
+  }
+}
+const md = `# CLERC re-ranking (${Q.length} queries × 30 BM25 candidates, model ${MODEL})\n\n${table(rows)}\n${boot.length ? `\nPaired bootstrap (${Q.length} queries, 4,000 resamples), reciprocal rank of the gold passage per query:\n\n${table(boot)}\n` : ""}`;
 console.log("\n" + md);
 writeFileSync(new URL(`../results/clerc-${N}.md`, import.meta.url), md);

@@ -12,7 +12,67 @@ This package adds the scratchpad in code: ask Jev, render its answers as text, p
 | `chain(state, [steps…, final])` | each step's answers become established facts for the next step | decompose a judgment into the facts it depends on |
 | `choose(state, options)` / `rerank(query, candidates)` | ready-made chains for multiple choice and for ranking | MMLU-style questions, retrieval re-ranking |
 
-<!-- RESULTS -->
+## Results in one table
+
+Three benchmarks, one model (`jev-1.13.0`, September 2026), every Jev response cached under [`bench/results/`](bench/results) so the tables re-render without a key.
+
+| benchmark | plain Jev | jev-chain-of-thought | calls | what changed |
+| --- | --- | --- | --- | --- |
+| **Dependent rubric** — 100 transaction memos, 3 questions where `requires_review` depends on `risk_level` ([details](bench/results/synthetic.md)) | 74% all-3-correct | **93%** (`chain` + `refine`) | 3.1 / doc | the questions can finally see each other's answers |
+| **CLERC legal re-ranking** — TypeSafe's own cookbook, replicated exactly ([details](bench/results/clerc-150.md)) | top-1 23% · MRR 0.378 · **30 calls/query** (the cookbook's method) | top-1 27% · MRR 0.402 · **2 calls/query** (`rerank`, fanout + listwise) | 7% of the calls, 72% of the tokens | same or better ranking at a fraction of the cost; the accuracy gain itself is within noise at n=150 |
+| **MMLU-Pro** — 700-question stratified sample ([details](bench/results/mmlu-pro-700.md)) | 82.1% | 82.1–82.3% (nothing beats plain Jev) | 1–3 / q | atomic knowledge questions have no intermediate answers to feed back |
+
+The pattern: **feeding answers back helps exactly when one answer depends on another.** In a single Jev request every question is scored in isolation ([TypeSafe's own parallel-questions cookbook](https://docs.typesafe.ai/cookbooks/parallel_questions) shows batching "adds no noise" precisely because questions never see each other). A rubric whose review flag depends on the risk level, or a ranking whose listwise pick benefits from pointwise scores, gains from a second pass. A ten-option physics question does not.
+
+### Against TypeSafe's published numbers
+
+TypeSafe publishes its results as cookbooks. The one with a public dataset and a hard number is [re-ranking on CLERC](https://docs.typesafe.ai/cookbooks/rerank_typesafe): 40 legal queries, a BM25 shortlist of 30 from 3,565 court-opinion passages, one `noul` per query–candidate pair on `jev-1.12`.
+
+`bench/clerc/prepare.py` rebuilds that slice byte-for-byte (same seed, same 170 pooled rows, same `bm25s` shortlist: BM25 alone lands the gold passage at rank 1 for 5%, top-5 15%, top-10 38%, exactly as the cookbook reports). On those 40 queries:
+
+| method | calls / query | top-1 | top-5 | top-10 | cost (40 queries) |
+| --- | --- | --- | --- | --- | --- |
+| TypeSafe cookbook, `jev-1.12`, pointwise | 30 | 18% | 35% | 62% | $0.065 (their figure) |
+| same method replicated on `jev-1.13.0` | 30 | 32.5% | 52.5% | 72.5% | $0.070 |
+| `rerank` listwise (one `choice` over 30 ids) | **1** | 32.5% | 60.0% | **85.0%** | **$0.035** |
+| `rerank` cot30 (pointwise draft → listwise over all 30) | 31 | **37.5%** | 60.0% | 75.0% | $0.106 |
+| `rerank` default (fanout → listwise over top 10) | **2** | 32.5% | 60.0% | 75.0% | $0.051 |
+
+Two honest caveats. Most of the jump over the cookbook's 18 / 35 / 62 comes from the model version, not from this package: the plain replica already scores 32.5 / 52.5 / 72.5 on `jev-1.13.0`. And 40 queries is too few to separate methods, so the bench also runs the other 110 pooled rows under the identical protocol (150 queries, [`clerc-150.md`](bench/results/clerc-150.md)): the 2-call default reaches MRR 0.402 vs 0.378 for the 30-call cookbook method, but a paired bootstrap puts that difference at +0.023 with a 95% interval of [−0.026, +0.062]. What *is* robust is the cost side: one or two calls per query, with the query sent once and the candidates inside isolated questions, match the 30-call design.
+
+A decomposition that hurt: adding three extra "facet" nouls per pair (same rule? shared wording? authoritative language?) and averaging log-odds drops MRR by 0.12 with a confidence interval well below zero. Jev's single well-written question beats a composite of weaker ones. `rerank` keeps `facets` as an option; the bench keeps the negative result.
+
+### Where the feedback loop wins outright
+
+[`bench/synthetic`](bench/synthetic/run.mjs): 100 OCR-noised transaction memos with a written rubric. `risk_level` is a sum of amount, origin and note points; `requires_review` is true when risk is HIGH or MEDIUM or the note mentions a dispute; `action_tier` depends on risk and amount. Three questions, one document, gold labels computed by the generator.
+
+| strategy | risk_level | requires_review | action_tier | all 3 | calls / doc |
+| --- | --- | --- | --- | --- | --- |
+| direct (one call) | 99% | 88% | 84% | 74% | 1 |
+| `refine` (feed the draft back until it stops changing) | 100% | 99% | 89% | 88% | 2.2 |
+| `chain` (ask the three rubric inputs first, then the judgment) | 100% | 93% | 88% | 87% | 2 |
+| `chain` + `refine` | 100% | 97% | 94% | **93%** | 3.1 |
+
+`requires_review` goes from 88% to 99% with one feedback pass, because its rubric is literally "look at `risk_level`" and in a single call it cannot. Convergence takes one round: the second and third passes change 4 and 3 answers out of 100.
+
+**Wrong-draft control.** Feed back a draft taken from a *different* memo (wrong on 87 of 100) and the final answer copies a wrong field on 29 of them; all-3 accuracy drops from 74% to 66%. Jev treats the draft as evidence, so the loop only helps when the draft is Jev's own answer to the same document. Never feed it another model's guess or a stale result.
+
+### Where it does not help
+
+[`bench/mmlu-pro`](bench/mmlu-pro/run.mjs), 700 questions stratified over the 14 MMLU-Pro categories (50 each), options as `choice` criteria, the question and subject as state:
+
+| strategy | accuracy | mean top-p | ECE | calls / q |
+| --- | --- | --- | --- | --- |
+| direct | **82.1%** | 0.840 | **0.059** | 1 |
+| refine (own draft fed back) | 81.1% | 0.856 | 0.063 | 2 |
+| permute (3 option orders averaged) | 81.9% | 0.829 | 0.052 | 3 |
+| verify (+ one "is this option correct?" noul per option, fed back) | 82.1% | 0.861 | 0.073 | 2 |
+| narrow (second choice over the top 3) | 80.9% | 0.829 | 0.076 | 2 |
+| cot (verify + narrow) | 80.3% | 0.838 | 0.067 | 2 |
+| product (listwise × per-option nouls, one call) | 82.3% | 0.867 | 0.073 | 1 |
+
+Every variant lands within ±2 points of plain Jev (one question is 0.14 points). For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
+
 
 ## Install
 
@@ -65,4 +125,40 @@ requires_review: true (p=0.91)
 
 The wording matters: a draft presented as fact is copied, a draft presented as fallible is checked (see the anchor control below).
 
-<!-- BENCH -->
+## Reproduce
+
+```bash
+git clone https://github.com/leepokai/jev-chain-of-thought && cd jev-chain-of-thought
+npm test                                                   # unit tests, no key needed
+
+# data (Python, once): MMLU-Pro from Hugging Face, CLERC slice rebuilt exactly as TypeSafe's cookbook does
+python -m venv .venv && .venv/bin/pip install datasets bm25s
+.venv/bin/python bench/mmlu-pro/prepare.py bench/data/mmlu_pro.json
+.venv/bin/python bench/clerc/prepare.py    bench/data/clerc.json     # prints BM25 top-1/5/10 = 5% / 15% / 38%, matching the cookbook
+
+# benches: every Jev response is cached in bench/results/*.json, so re-running is free and partial runs resume
+export JEV_API_KEY=…
+node bench/synthetic/run.mjs                 # 100 memos × 5 strategies        ≈ 1,300 calls, $0.04
+N=40  node bench/clerc/run.mjs all           # the cookbook's 40 queries        ≈ 4,000 calls, $0.5
+N=150 node bench/clerc/run.mjs all           # + the other 110 pooled rows      ≈ 15,000 calls, $2
+N=700 node bench/mmlu-pro/run.mjs all        # stratified sample, 7 strategies  ≈ 8,400 calls, $0.3
+N=all node bench/mmlu-pro/run.mjs direct     # full test set, 12,032 questions  ≈ $0.3, 10 min at 12 concurrent
+```
+
+Each run prints a Markdown table and writes it next to the cache (`bench/results/*.md`). Rate limit is 1,200 requests per minute; the client retries 429/5xx with backoff and honours `retry-after`.
+
+## Design notes
+
+- **Why a second call at all.** Jev packs the state once and scores each question in its own branch; branches do not see each other ([architecture write-up](https://archerhume.com/posts/jevs-architecture-unmasked/), confirmed by TypeSafe's parallel-questions cookbook). Any judgment that is a function of another judgment therefore needs the first answer to be *in the state*. That is the whole trick, and it is why the gain is large on rubrics and zero on atomic questions.
+- **Fixed point, not diffusion.** `refine` converges in one round in every benchmark here. It stops as soon as the labels repeat; `rounds` is a cap, not a schedule.
+- **The draft is evidence.** Presenting the draft as fallible ("may contain errors: re-check") matters, and even so Jev copies a wrong draft field about a third of the time. Feed back only its own answers to the same document.
+- **Cost.** Jev charges input tokens only ($0.042 / M). A feedback pass costs the state again plus a few lines. The expensive design is the cookbook's one-call-per-pair re-ranking; `rerank` sends the query once and the candidates inside isolated questions, which is the same computation for 3% of the calls.
+- **Nothing here needs the SDK.** One `fetch` to `POST /v1/systemone`, key from `JEV_API_KEY`, `TYPESAFE_API_KEY` or [`jev-guard key`](https://github.com/leepokai/jev-guard).
+
+## Related
+
+- [jev-guard](https://github.com/leepokai/jev-guard) — the same author's prompt-injection and dangerous-action guard for coding agents, built on Jev.
+- [TypeSafe docs](https://docs.typesafe.ai) · [cookbooks](https://docs.typesafe.ai/cookbooks/rerank_typesafe) · [Jev's architecture unmasked](https://archerhume.com/posts/jevs-architecture-unmasked/) · [openjev](https://github.com/TheoLeeCJ/openjev)
+
+MIT © [leepokai](https://github.com/leepokai)
+

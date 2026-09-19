@@ -40,6 +40,9 @@ test("choose narrows to top-k and renormalises", async () => {
 
 test("rerank cot: pointwise then listwise over the head", async () => {
   const ask = fake((id, q, state) => id === "best" ? { choice: "c2", probabilities: { c1: 0.1, c2: 0.9 } } : { p: state.candidate === "one" ? 0.9 : state.candidate === "two" ? 0.8 : 0.1 });
-  const r = await rerank("q", { c1: "one", c2: "two", c3: "three" }, { instructions: "?", topK: 2, ask });
+  const r = await rerank("q", { c1: "one", c2: "two", c3: "three" }, { instructions: "?", topK: 2, pointwise: "pointwise", ask });
   assert.deepEqual(r.ranking, ["c2", "c1", "c3"]); assert.equal(r.calls, 4);
+  const f = fake((id, q) => id === "best" ? { choice: "c1", probabilities: { c1: 0.6, c2: 0.4 } } : { p: q.instructions.candidate === "two" ? 0.9 : 0.5 });
+  const r2 = await rerank("q", { c1: "one", c2: "two", c3: "three" }, { instructions: "?", topK: 2, ask: f });  // default: fanout + listwise = 2 calls
+  assert.deepEqual(r2.ranking, ["c1", "c2", "c3"]); assert.equal(r2.calls, 2);
 });

@@ -2,7 +2,7 @@
 // (requires_review depends on risk_level). Shows why feeding answers back helps: questions in one Jev call cannot see each other's answers.
 // usage: node bench/synthetic/run.mjs        (generator: github.com/leepokai/claude-daily-tasks experiments/jev/jev.py make_doc)
 import { readFileSync, writeFileSync } from "node:fs";
-import { ask, refine, chain, choose, pmap, label, top } from "../../src/index.js";
+import { ask, refine, chain, feedback, pmap, label, top } from "../../src/index.js";
 import { cache, table, pct, PRICE } from "../lib.mjs";
 
 const MODEL = process.env.MODEL ?? "jev-1.13.0", C = +(process.env.C || 8);
@@ -26,6 +26,8 @@ const STEPS = {  // the rubric's three inputs, asked first
 };
 const STRATEGIES = {
   direct: (doc) => refine(doc, FINAL, { rounds: 0, model: MODEL }),
+  // control: the draft fed back comes from a DIFFERENT memo (wrong on most fields). Does Jev correct it or copy it?
+  "wrong draft": async (doc, i) => { const wrong = await ask(memos[(i + 1) % memos.length].doc, FINAL, { model: MODEL }); const r = await ask(feedback(doc, wrong.answers), FINAL, { model: MODEL }); return { answers: r.answers, trace: [wrong, r], calls: 2, usage: { input: wrong.usage.input + r.usage.input }, draft: wrong.answers }; },
   refine: (doc) => refine(doc, FINAL, { rounds: 3, model: MODEL }),
   chain: (doc) => chain(doc, [STEPS, FINAL], { model: MODEL }),
   "chain+refine": (doc) => chain(doc, [STEPS, FINAL], { refine: 3, model: MODEL }),
@@ -34,7 +36,7 @@ const { c: R, save } = cache(new URL("../results/synthetic.json", import.meta.ur
 for (const [name, run] of Object.entries(STRATEGIES)) {
   if (R[name]?.length === memos.length) continue;
   const t0 = performance.now();
-  R[name] = await pmap(memos, async ({ doc }) => { const r = await run(doc); return { pred: Object.fromEntries(Object.keys(FINAL).map((f) => [f, label(r.answers[f])])), conf: Object.keys(FINAL).reduce((s, f) => s + top(r.answers[f]), 0) / 3, calls: r.calls, input: r.usage.input, ms: r.trace.reduce((s, t) => s + t.ms, 0) }; }, C);
+  R[name] = await pmap(memos, async ({ doc }, i) => { const r = await run(doc, i); return { pred: Object.fromEntries(Object.keys(FINAL).map((f) => [f, label(r.answers[f])])), draft: r.draft && Object.fromEntries(Object.keys(FINAL).map((f) => [f, label(r.draft[f])])), conf: Object.keys(FINAL).reduce((s, f) => s + top(r.answers[f]), 0) / 3, calls: r.calls, input: r.usage.input, ms: r.trace.reduce((s, t) => s + t.ms, 0) }; }, C);
   console.log(`${name}: ${((performance.now() - t0) / 1000).toFixed(0)}s wall`); save();
 }
 const fields = Object.keys(FINAL), rows = [];
@@ -44,5 +46,11 @@ for (const name of Object.keys(STRATEGIES)) {
   rows.push({ strategy: name, ...Object.fromEntries(fields.map((f) => [f, pct(acc(f))])), "all 3": pct(rs.filter((r, i) => fields.every((f) => r.pred[f] === memos[i].gold[f])).length / rs.length),
     "mean top-p": (rs.reduce((s, r) => s + r.conf, 0) / rs.length).toFixed(2), "calls/doc": (rs.reduce((s, r) => s + r.calls, 0) / rs.length).toFixed(2), cost: `$${(rs.reduce((s, r) => s + r.input, 0) * PRICE).toFixed(4)}`, "s/doc": (rs.reduce((s, r) => s + r.ms, 0) / rs.length / 1000).toFixed(2) });
 }
-const md = `# Synthetic rubric memos (${memos.length} docs, model ${MODEL})\n\n${table(rows)}\n`;
+let anchor = "";
+if (R["wrong draft"]) {
+  const rs = R["wrong draft"], wrong = rs.filter((r, i) => fields.some((f) => r.draft[f] !== memos[i].gold[f])).length;
+  const copied = rs.filter((r, i) => fields.some((f) => r.draft[f] !== memos[i].gold[f] && r.pred[f] === r.draft[f])).length;
+  anchor = `\nWrong-draft control: the injected draft was wrong on ${wrong} of ${rs.length} memos; the final answer copied a wrong draft field on ${copied} of them.\n`;
+}
+const md = `# Synthetic rubric memos (${memos.length} docs, model ${MODEL})\n\n${table(rows)}\n${anchor}`;
 console.log("\n" + md); writeFileSync(new URL("../results/synthetic.md", import.meta.url), md);

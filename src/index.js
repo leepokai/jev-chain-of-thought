@@ -52,8 +52,8 @@ export async function chain(state, steps, { refine: rounds = 0, ask = jevAsk, ..
   return done([...trace.slice(0, -1), ...r.trace]);
 }
 
-/** Multiple choice over options {key: text}. strategy: direct | refine | permute | verify | narrow | cot (verify + narrow) | product (one call: listwise × per-option nouls, no feedback). */
-export async function choose(state, options, { instructions = "Which option is correct?", strategy = "cot", k = 3, permutations = 3, id = "answer", ask = jevAsk, ...opts } = {}) {
+/** Multiple choice over options {key: text}. strategy: direct (default; nothing beat it on MMLU-Pro) | refine | permute | verify | narrow | cot (verify + narrow) | product (one call: listwise × per-option nouls, no feedback). */
+export async function choose(state, options, { instructions = "Which option is correct?", strategy = "direct", k = 3, permutations = 3, id = "answer", ask = jevAsk, ...opts } = {}) {
   const keys = Object.keys(options), trace = [];
   const choice = (ks) => ({ [id]: { type: "choice", instructions, criteria: Object.fromEntries(ks.map((o) => [o, options[o]])) } });
   const verify = Object.fromEntries(keys.map((o) => [`${o}_correct`, { type: "noul",
@@ -82,11 +82,12 @@ export async function choose(state, options, { instructions = "Which option is c
   return { choice: best, probabilities: probs, trace, calls: trace.length };
 }
 
-/** Rank candidates {id: text} for a query. strategy: pointwise | fanout | listwise | cot (pointwise, then listwise over the top `topK` with the draft).
+/** Rank candidates {id: text} for a query. strategy: pointwise | fanout | listwise | cot (pointwise scores, then listwise over the top `topK` with the draft).
+ *  `pointwise`: how the pointwise pass is made — "fanout" (default: one call, one isolated noul per candidate) or "pointwise" (one call per candidate, the cookbook way).
  *  `facets`: extra noul questions {name: {instructions, criteria}} asked about every pair and averaged in log-odds with the main one (composite scoring).
  *  `scores`: precomputed pointwise scores {id: p} to skip the pointwise pass. */
 export async function rerank(query, candidates, { instructions, criteria = { true: "Relevant.", false: "Not relevant." }, strategy = "cot", topK = 10, concurrency = 8,
-  queryKey = "query", candidateKey = "candidate", pointwise = "pointwise", facets = {}, scores: precomputed, ask = jevAsk, ...opts } = {}) {
+  queryKey = "query", candidateKey = "candidate", pointwise = "fanout", facets = {}, scores: precomputed, ask = jevAsk, ...opts } = {}) {
   if (!instructions) throw new Error("rerank needs `instructions`: what makes a candidate the right one for the query");
   const ids = Object.keys(candidates), trace = [], scores = {};
   const call = async (s, qs) => { const r = await ask(s, qs, opts); trace.push(r); return r.answers; };

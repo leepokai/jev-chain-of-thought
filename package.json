@@ -4,15 +4,38 @@
   "description": "Chain-of-thought and self-refinement for TypeSafe's Jev: feed its typed answers back as state and ask again. Zero dependencies.",
   "type": "module",
   "main": "src/index.js",
-  "exports": { ".": "./src/index.js", "./jev": "./src/jev.js" },
-  "files": ["src"],
-  "scripts": { "test": "node --test test/*.test.js" },
-  "engines": { "node": ">=20.3" },
-  "keywords": ["jev", "typesafe", "chain-of-thought", "self-refine", "system-one", "mmlu-pro", "reranking"],
+  "exports": {
+    ".": "./src/index.js",
+    "./jev": "./src/jev.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20.3"
+  },
+  "keywords": [
+    "jev",
+    "typesafe",
+    "chain-of-thought",
+    "self-refine",
+    "system-one",
+    "mmlu-pro",
+    "reranking"
+  ],
   "author": "leepokai",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/leepokai/jev-chain-of-thought.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leepokai/jev-chain-of-thought.git"
+  },
   "homepage": "https://github.com/leepokai/jev-chain-of-thought#readme",
   "bugs": "https://github.com/leepokai/jev-chain-of-thought/issues",
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "src/index.d.ts"
 }
