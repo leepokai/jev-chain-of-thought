@@ -9,8 +9,8 @@ import time
 from pathlib import Path
 from typing import Literal, get_origin
 
+import numpy as np  # before dspy: dspy installs a lazy numpy shim, and unpickling a cached embedding through it breaks numpy's import
 import dspy
-import numpy as np
 
 import dspy_jev
 from dspy_jev import S2A, CoVe, Permute, Predict, Reread, SelfRefine
@@ -59,7 +59,7 @@ def techniques(sig, trainset: list[dspy.Example], *, text_field: str, k: int = 5
         zoo["fewshot-cot"] = dspy.LabeledFewShot(k=k).compile(Predict(sig), trainset=exemplars, sample=False)
     if len(trainset) >= many:
         zoo["manyshot"] = dspy.LabeledFewShot(k=many).compile(Predict(sig), trainset=trainset)
-    zoo["knn"] = dspy.KNNFewShot(k=k, trainset=trainset, vectorizer=dspy.Embedder(hashed_bow), max_bootstrapped_demos=0, max_labeled_demos=k).compile(Predict(sig))
+    zoo["knn"] = dspy.KNNFewShot(k=k, trainset=trainset, vectorizer=dspy.Embedder(hashed_bow, caching=False), max_bootstrapped_demos=0, max_labeled_demos=k).compile(Predict(sig))
     zoo["refine"] = SelfRefine(sig, rounds=2)
     zoo["cove"] = CoVe(sig)
     if s2a:

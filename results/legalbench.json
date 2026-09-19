@@ -272,18 +272,18 @@
   },
   "cove": {
    "acc": 95.33,
-   "calls_per_row": 2.62,
-   "cost": 0.007417746000000001
+   "calls_per_row": 3.0,
+   "cost": 0.008476776000000002
   },
   "s2a": {
    "acc": 95.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.006499500000000001
   },
   "chain": {
    "acc": 95.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 2.0,
+   "cost": 0.006848184000000001,
    "sub": {
     "parties_are_diverse": 94.66666666666667,
     "aic_is_met": 100.0
@@ -291,8 +291,8 @@
   },
   "code": {
    "acc": 95.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 1.0,
+   "cost": 0.0038713920000000004,
    "sub": {
     "parties_are_diverse": 94.66666666666667,
     "aic_is_met": 100.0
@@ -302,63 +302,63 @@
  "diversity_5": {
   "direct": {
    "acc": 81.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0027403320000000003
   },
   "role": {
    "acc": 82.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0028285320000000004
   },
   "emotion": {
    "acc": 79.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0028915320000000005
   },
   "zs-cot": {
    "acc": 83.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0028033320000000004
   },
   "reread": {
    "acc": 59.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0030740640000000005
   },
   "fewshot": {
    "acc": 88.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0057202320000000004
   },
   "manyshot": {
    "acc": 94.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.031966032000000005
   },
   "knn": {
    "acc": 93.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.005703264
   },
   "refine": {
    "acc": 79.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.1,
+   "cost": 0.005927922
   },
   "cove": {
    "acc": 72.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 3.0,
+   "cost": 0.008655696000000001
   },
   "s2a": {
    "acc": 81.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.006685098000000001
   },
   "chain": {
    "acc": 85.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 2.0,
+   "cost": 0.006967464000000001,
    "sub": {
     "parties_are_diverse": 90.0,
     "aic_is_met": 94.0
@@ -366,8 +366,8 @@
   },
   "code": {
    "acc": 90.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 1.0,
+   "cost": 0.003931032,
    "sub": {
     "parties_are_diverse": 90.0,
     "aic_is_met": 94.0
@@ -377,63 +377,63 @@
  "diversity_6": {
   "direct": {
    "acc": 82.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0029642340000000005
   },
   "role": {
    "acc": 86.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0030524340000000006
   },
   "emotion": {
    "acc": 89.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0031154340000000003
   },
   "zs-cot": {
    "acc": 86.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0030272340000000006
   },
   "reread": {
    "acc": 85.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0035218680000000005
   },
   "fewshot": {
    "acc": 86.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.006989934000000001
   },
   "manyshot": {
    "acc": 84.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.043328334
   },
   "knn": {
    "acc": 84.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.007040208000000001
   },
   "refine": {
    "acc": 82.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.08,
+   "cost": 0.006335994000000001
   },
   "cove": {
    "acc": 79.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 3.0,
+   "cost": 0.009327402000000002
   },
   "s2a": {
    "acc": 78.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.008168034000000001
   },
   "chain": {
    "acc": 88.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 2.0,
+   "cost": 0.007415268000000001,
    "sub": {
     "parties_are_diverse": 98.0,
     "aic_is_met": 89.33333333333333
@@ -441,8 +441,8 @@
   },
   "code": {
    "acc": 87.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0,
+   "calls_per_row": 1.0,
+   "cost": 0.004154934000000001,
    "sub": {
     "parties_are_diverse": 98.0,
     "aic_is_met": 89.33333333333333
@@ -452,135 +452,135 @@
  "hearsay": {
   "direct": {
    "acc": 68.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0008744820000000001
   },
   "role": {
    "acc": 70.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0009038820000000002
   },
   "emotion": {
    "acc": 74.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0009248820000000001
   },
   "zs-cot": {
    "acc": 70.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0008954820000000001
   },
   "reread": {
    "acc": 72.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0009507960000000002
   },
   "fewshot": {
    "acc": 68.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0015149820000000002
   },
   "manyshot": {
    "acc": 72.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.004379382
   },
   "knn": {
    "acc": 74.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0014868420000000002
   },
   "refine": {
    "acc": 68.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.04,
+   "cost": 0.0018382560000000001
   },
   "cove": {
    "acc": 70.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 3.0,
+   "cost": 0.002770446
   },
   "s2a": {
    "acc": 68.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.02,
+   "cost": 0.0008982960000000001
   },
   "chain": {
    "acc": 78.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.002219364
   },
   "code": {
    "acc": 76.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0012461820000000002
   }
  },
  "personal_jurisdiction": {
   "direct": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.000584052
   },
   "role": {
    "acc": 93.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.000601692
   },
   "emotion": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0006142920000000001
   },
   "zs-cot": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.000596652
   },
   "reread": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0007082040000000001
   },
   "fewshot": {
    "acc": 86.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0012190920000000002
   },
   "manyshot": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0024891720000000004
   },
   "knn": {
    "acc": 86.67,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0012208140000000002
   },
   "refine": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.0011996040000000002
   },
   "cove": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 3.0,
+   "cost": 0.0018365760000000001
   },
   "s2a": {
    "acc": 83.33,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.0015858360000000002
   },
   "chain": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 2.0,
+   "cost": 0.0015750840000000002
   },
   "code": {
    "acc": 90.0,
-   "calls_per_row": 0.0,
-   "cost": 0.0
+   "calls_per_row": 1.0,
+   "cost": 0.0009141720000000001
   }
  }
 }

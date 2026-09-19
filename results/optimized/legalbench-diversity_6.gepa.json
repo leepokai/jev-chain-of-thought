@@ -1,0 +1,26 @@
+{
+  "traces": [],
+  "train": [],
+  "demos": [],
+  "signature": {
+    "instructions": "You are tasked with determining whether a federal court has diversity jurisdiction over a lawsuit.\n\nA federal court has diversity jurisdiction over a claim when BOTH of the following conditions are met:\n\n1. **Complete Diversity**: No plaintiff is a citizen of the same state as any defendant. All plaintiffs must be from different states than all defendants.\n\n2. **Amount in Controversy**: The amount in controversy must exceed $75,000.\n\n**Critical aggregation rules:**\n- A single plaintiff MAY aggregate all of their claims against a single defendant to reach the $75,000 threshold\n- Claims by different plaintiffs against the same defendant are NOT aggregated\n- Claims by the same plaintiff against different defendants are NOT aggregated\n- Claims by different plaintiffs against different defendants are NOT aggregated\n\n**Process:**\n1. First check complete diversity: compare the state of each plaintiff against the state of each defendant. If any plaintiff shares a state with any defendant, diversity jurisdiction does NOT exist.\n\n2. If complete diversity exists, then check if at least one plaintiff has claims against at least one defendant that sum to more than $75,000. **IMPORTANT**: You must check EACH plaintiff-defendant pair individually. For each plaintiff, sum ALL their claims against each specific defendant separately. If any single plaintiff-defendant pair has claims totaling more than $75,000, the amount in controversy requirement is satisfied.\n\n3. Return \"True\" only if BOTH complete diversity exists AND at least one plaintiff-defendant pair has aggregated claims exceeding $75,000. Otherwise return \"False\".\n\n**Key clarifications based on examples:**\n- In Example 1: Harper (Tennessee) and Oliver (Hawaii) sue William (Louisiana) and Liam (Mississippi). Complete diversity exists. However, checking each plaintiff-defendant pair:\n  - Harper vs William: $21,000 + $32,000 = $53,000 (not enough)\n  - Harper vs Liam: $6,000 + $41,000 = $47,000 (not enough)\n  - Oliver vs William: $21,000 + $32,000 = $53,000 (not enough)\n  - Oliver vs Liam: $6,000 + $41,000 = $47,000 (not enough)\n  - Since no individual plaintiff-defendant pair exceeds $75,000, the answer is False.\n\n- In Example 2: Amelia (Louisiana) and James (California) sue Sophia (Mississippi) and Noah (Alaska). Complete diversity exists. Checking pairs:\n  - James vs Noah: $22,000 + $89,000 = $111,000 (exceeds $75,000!)\n  - This single pair is sufficient, so the answer is True.\n\nGiven facts about parties and their claims, output \"True\" if diversity jurisdiction exists, or \"False\" if it does not.",
+    "fields": [
+      {
+        "prefix": "Facts:",
+        "description": "${facts}"
+      },
+      {
+        "prefix": "Answer:",
+        "description": "Is there diversity jurisdiction over this case?"
+      }
+    ]
+  },
+  "lm": null,
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.3.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

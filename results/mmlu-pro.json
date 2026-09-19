@@ -1,0 +1,62 @@
+{
+ "direct": {
+  "acc": 76.4,
+  "calls_per_q": 1.0,
+  "cost": 0.014508060000000001
+ },
+ "role": {
+  "acc": 76.6,
+  "calls_per_q": 1.0,
+  "cost": 0.014802060000000002
+ },
+ "emotion": {
+  "acc": 77.2,
+  "calls_per_q": 1.0,
+  "cost": 0.015012060000000002
+ },
+ "zs-cot": {
+  "acc": 77.2,
+  "calls_per_q": 1.0,
+  "cost": 0.014718060000000002
+ },
+ "reread": {
+  "acc": 78.4,
+  "calls_per_q": 1.0,
+  "cost": 0.01864212
+ },
+ "permute": {
+  "acc": 76.4,
+  "calls_per_q": 3.0,
+  "cost": 0.04352418
+ },
+ "fewshot": {
+  "acc": 74.2,
+  "calls_per_q": 1.0,
+  "cost": 0.05302206000000001
+ },
+ "fewshot-cot": {
+  "acc": 74.2,
+  "calls_per_q": 1.0,
+  "cost": 0.05302206000000001
+ },
+ "manyshot": {
+  "acc": 74.8,
+  "calls_per_q": 1.0,
+  "cost": 0.24286206000000002
+ },
+ "knn": {
+  "acc": 74.2,
+  "calls_per_q": 1.0,
+  "cost": 0.042647304000000004
+ },
+ "refine": {
+  "acc": 76.0,
+  "calls_per_q": 2.006,
+  "cost": 0.030961098000000003
+ },
+ "cove": {
+  "acc": 76.8,
+  "calls_per_q": 3.0,
+  "cost": 0.043692180000000004
+ }
+}

@@ -1,0 +1,26 @@
+{
+  "traces": [],
+  "train": [],
+  "demos": [],
+  "signature": {
+    "instructions": "Hearsay is (1) an out-of-court statement, made by a person, (2) offered in court to prove the truth of the matter asserted in the statement. Non-assertive conduct, statements not offered for their truth (e.g. to show effect on the listener, or that words were spoken), and statements made in the present court proceeding are not hearsay.",
+    "fields": [
+      {
+        "prefix": "Facts:",
+        "description": "${facts}"
+      },
+      {
+        "prefix": "Answer:",
+        "description": "Is this evidence hearsay?"
+      }
+    ]
+  },
+  "lm": null,
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.3.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}
