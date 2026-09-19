@@ -46,3 +46,17 @@ test("rerank cot: pointwise then listwise over the head", async () => {
   const r2 = await rerank("q", { c1: "one", c2: "two", c3: "three" }, { instructions: "?", topK: 2, ask: f });  // default: fanout + listwise = 2 calls
   assert.deepEqual(r2.ranking, ["c1", "c2", "c3"]); assert.equal(r2.calls, 2);
 });
+
+test("client: gateway backend maps noul to boolean and reads the gateway response shape", async () => {
+  const { ask, backend } = await import("../src/jev.js");
+  const calls = [];
+  const fetchImpl = async (url, init) => { calls.push({ url, init }); return { ok: true, status: 200, json: async () => ({ answers: { a: { probability: 0.7 }, b: { choice: "x", probabilities: { x: 0.9, y: 0.1 } } }, usage: { inputTokens: 12 }, providerMetadata: { typesafe: { confidence: { b: 0.8 } } } }) }; };
+  const env = { VERCEL_OIDC_TOKEN: "t" };
+  assert.equal(backend(env).kind, "gateway");
+  const r = await ask("s", { a: { type: "noul", instructions: "?" }, b: { type: "choice", instructions: "?", criteria: { x: 1, y: 2 } } }, { fetchImpl, env });
+  assert.equal(calls[0].url, "https://ai-gateway.vercel.sh/v4/ai/evaluation-model");
+  assert.equal(JSON.parse(calls[0].init.body).questions.a.type, "boolean");
+  assert.equal(calls[0].init.headers["ai-gateway-auth-method"], "oidc");
+  assert.deepEqual([r.answers.a.p, r.answers.b.choice, r.answers.b.confidence, r.usage.input], [0.7, "x", 0.8, 12]);
+  assert.equal(backend({ JEV_API_KEY: "k", VERCEL_OIDC_TOKEN: "t" }).kind, "typesafe");  // direct key wins when both are set
+});
