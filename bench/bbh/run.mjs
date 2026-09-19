@@ -112,7 +112,7 @@ for (const task of TASKS) {
   for (const name of want.filter((n) => GENERIC[n] || CHAIN_FOR(task).includes(n))) {
     R[task][name] ??= {};
     const todo = items.map((p, i) => [p, i]).filter(([, i]) => !R[task][name][i]);
-    if (!todo.length) continue;
+    if (!todo.length || process.env.REPORT_ONLY) continue;  // REPORT_ONLY=1 renders whatever is cached without calling the API
     const t0 = performance.now(); let failed = 0;
     await pmap(todo, async ([p, i]) => {
       try { const r = await (GENERIC[name] ?? CHAINS[name])(p, task);
@@ -132,7 +132,7 @@ for (const task of TASKS) {
     const rs = name === "vote" ? Object.fromEntries(items.map((_, i) => { const cs = SINGLE_CALL.map((n) => R[task]?.[n]?.[i]?.choice); return cs.filter(Boolean).length >= 3 ? [i, { choice: vote(cs), calls: 0, input: 0 }] : [i, null]; })) : R[task]?.[name];
     if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
     const acc = items.filter((p, i) => rs[i].choice === p.gold).length / items.length;
-    row[name] = pct(acc); (sums[name] ??= { acc: 0, n: 0, calls: 0, tok: 0, tasks: 0 });
+    row[name] = pct(acc); (sums[name] ??= { acc: 0, n: 0, calls: 0, tok: 0, tasks: 0 });  // only complete columns are reported (sums[name] ??= { acc: 0, n: 0, calls: 0, tok: 0, tasks: 0 });
     sums[name].acc += acc; sums[name].tasks++; sums[name].calls += items.reduce((s, _, i) => s + rs[i].calls, 0); sums[name].tok += items.reduce((s, _, i) => s + rs[i].input, 0); sums[name].n += items.length;
   }
   rows.push(row);

@@ -12,6 +12,8 @@ This package adds the scratchpad in code: ask Jev, render its answers as text, p
 | `chain(state, [steps…, final])` | each step's answers become established facts for the next step | decompose a judgment into the facts it depends on |
 | `choose(state, options)` / `rerank(query, candidates)` | ready-made chains for multiple choice and for ranking | MMLU-style questions, retrieval re-ranking |
 
+> **Status (2026-09-19 evening):** the full technique sweep is in progress. Complete so far: every technique on 8 of the 23 BBH tasks ([`bbh-techniques-partial.md`](bench/results/bbh-techniques-partial.md)), on LegalBench diversity_1, and the six second-pass strategies on MMLU-Pro; the API account ran out of credits mid-sweep (≈ $6 of input tokens spent across all benches). Every cached answer is committed, so `node bench/<bench>/run.mjs all` resumes exactly where it stopped once credits are back; `REPORT_ONLY=1` re-renders the tables without calling the API.
+
 ## Results in one table
 
 Three benchmarks, one model (`jev-1.13.0`, September 2026), every Jev response cached under [`bench/results/`](bench/results) so the tables re-render without a key.
@@ -173,7 +175,20 @@ Two findings, one of them a surprise:
 - **Plain Jev already scores 91.8% on BBH with one call and no reasoning.** The tasks that chain-of-thought was invented for, multi-step state tracking, propagating truth values through a chain of liars, ordering constraints, are at or near 100% without any scaffold. Whatever RLCD training did, it internalised the procedure. Every typed chain we built on the problem structure is neutral or *worse*: stepping through the swaps one call at a time drops tracking from 90–98% to 80–84%, because each step's answer becomes a new place to make an error and the model was already solving the whole thing in one read. Whether BBH items were in Jev's training data cannot be ruled out from outside (the files carry the BIG-bench canary string, which is meant to keep them out of corpora); the numbers are reported as measured.
 - **The one task that moves is the one that is about reading the prompt.** disambiguation_qa (which noun a pronoun refers to, or whether it is ambiguous) goes from 70.4% to 84.8% with the three worked exemplars in the instructions, and to 80.4% with a plain self-refine pass. That is a task-definition problem, not a reasoning one: the exemplars show what "ambiguous" means in this dataset. Few-shot examples help Jev where they help an LLM: when the label semantics are not obvious from the question alone.
 
-For reference, the BBH paper's few-shot CoT numbers for the strongest model of 2022 (Codex, `code-davinci-002`) average 73.9% over these tasks; human-rater average is 67.7%, best human 94.4%.
+For reference, the BBH paper reports Codex (`code-davinci-002`) at 56.6% answer-only and 73.9% with few-shot CoT (+16.7) averaged over these tasks; the average human rater is 67.7%, the best 94.4%.
+
+#### The thirteen techniques on the eight BBH tasks finished so far
+
+| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble (3) | permute (3) | few-shot | few-shot CoT | kNN few-shot | contrastive | refine | CoVe | vote (9 single-call) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| mean over 8 tasks | 88.6 | 88.8 | 88.4 | 88.7 | **89.3** | 88.6 | 88.6 | 89.4 | 89.8 | **90.1** | 89.4 | 89.9 | **90.1** | 88.9 |
+| disambiguation_qa | 70.4 | 70.8 | 69.6 | 71.2 | 72.0 | 70.4 | 70.0 | 83.6 | **84.8** | 83.2 | 82.4 | 80.4 | 82.0 | 72.4 |
+| causal_judgement | 66.8 | 66.8 | 66.3 | 66.8 | 68.4 | 67.4 | 66.8 | 63.6 | 63.6 | 68.4 | 64.7 | 67.4 | 66.8 | 66.3 |
+| date_understanding | 92.4 | 92.8 | 92.4 | 92.0 | **94.0** | 92.8 | 92.4 | 89.6 | 90.0 | 89.6 | 88.8 | 92.8 | 92.8 | 92.8 |
+| calls / item | 1 | 1 | 1 | 1 | 1 | 3 | 3 | 1 | 1 | 1 | 1 | 2 | 3 | 0 |
+
+Zero-shot wording tricks (a role, an emotional appeal, "let's think step by step") do nothing for a model that does not generate: ±0.5 points, i.e. noise. Re-reading the question (the state twice) is the only phrasing change with a consistent small gain. The techniques that move a task are the ones that carry *information*: worked exemplars (disambiguation_qa +14), nearest-neighbour exemplars from the same task, and a second pass. Averaging over option orders or instruction framings changes nothing, because Jev is deterministic and its order sensitivity is small on these tasks. Majority vote over nine single-call variants is no better than any one of them.
+
 
 
 ### LegalBench: rule application on a public benchmark

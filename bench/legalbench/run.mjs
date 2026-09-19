@@ -59,7 +59,7 @@ for (const task of Object.keys(data)) {
   for (const name of want) {
     R[task][name] ??= {};
     const todo = items.map((it, i) => [it, i]).filter(([, i]) => !R[task][name][i]);
-    if (!todo.length) continue;
+    if (!todo.length || process.env.REPORT_ONLY) continue;  // REPORT_ONLY=1 renders whatever is cached without calling the API
     const t0 = performance.now(); let failed = 0;
     await pmap(todo, async ([it, i]) => {
       try { const r = await STRATEGIES[name](task, it.text), all = { ...(r.trace[0]?.answers ?? {}), ...r.answers };  // chain: sub-conditions live in the first pass

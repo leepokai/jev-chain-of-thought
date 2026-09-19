@@ -34,7 +34,7 @@ const options = (q) => Object.fromEntries(q.options.map((o, i) => [letters[i], o
 for (const name of want) {
   R[name] ??= {};
   const todo = Q.filter((q) => !R[name][q.id]);
-  if (todo.length) {
+  if (todo.length && !process.env.REPORT_ONLY) {  // REPORT_ONLY=1 renders whatever is cached without calling the API
     const t0 = performance.now(); let n = 0;
     let failed = 0;
     await pmap(todo, async (q) => {
