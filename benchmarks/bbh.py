@@ -34,7 +34,7 @@ def prepare(task, options=None):
     return sig, items[:TRAIN], items[TRAIN:TRAIN + TEST], exemplars
 
 
-def main(tasks, test_n=TEST, options="text"):
+def main(tasks, test_n=TEST, options="text", only=None):
     global TEST, OPTIONS
     TEST, OPTIONS = test_n, options
     lm = configure()
@@ -44,6 +44,8 @@ def main(tasks, test_n=TEST, options="text"):
         zoo = techniques(sig, train, text_field="question", k=3, many=50, exemplars=exemplars, permute=len(sig.output_fields["answer"].annotation.__args__) > 2 if hasattr(sig.output_fields["answer"].annotation, "__args__") else True)
         row, out[task] = {"task": task, "n": len(test)}, {}
         for name, prog in zoo.items():
+            if only and name not in only:
+                continue
             m = Meter(lm)
             score = dspy.Evaluate(devset=test, metric=exact("answer"), num_threads=16, display_progress=False, failure_score=0.0)(prog).score
             calls, tokens = m.read()
@@ -64,5 +66,6 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     n = int(sys.argv[sys.argv.index("--test") + 1]) if "--test" in sys.argv else TEST
     opt = sys.argv[sys.argv.index("--options") + 1] if "--options" in sys.argv else "text"
-    args = [a for a in args if a not in (str(n), opt)]
-    main(args or BBH_TASKS, n, opt)
+    only = sys.argv[sys.argv.index("--techniques") + 1].split(",") if "--techniques" in sys.argv else None
+    args = [a for a in args if a not in (str(n), opt) and a != (sys.argv[sys.argv.index("--techniques") + 1] if only else None)]
+    main(args or BBH_TASKS, n, opt, only)
