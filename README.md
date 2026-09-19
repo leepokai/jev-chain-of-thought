@@ -20,7 +20,7 @@ Three benchmarks, one model (`jev-1.13.0`, September 2026), every Jev response c
 | --- | --- | --- | --- | --- |
 | **Dependent rubric** — 100 transaction memos, 3 questions where `requires_review` depends on `risk_level` ([details](bench/results/synthetic.md)) | 74% all-3-correct | **93%** (`chain` + `refine`) | 3.1 / doc | the questions can finally see each other's answers |
 | **CLERC legal re-ranking** — TypeSafe's own cookbook, replicated exactly ([details](bench/results/clerc-150.md)) | top-1 23% · MRR 0.378 · **30 calls/query** (the cookbook's method) | top-1 27% · MRR 0.402 · **2 calls/query** (`rerank`, fanout + listwise) | 7% of the calls, 72% of the tokens | same or better ranking at a fraction of the cost; the accuracy gain itself is within noise at n=150 |
-| **MMLU-Pro** — 700-question stratified sample ([details](bench/results/mmlu-pro-700.md)) | 82.1% | 82.1–82.3% (nothing beats plain Jev) | 1–3 / q | atomic knowledge questions have no intermediate answers to feed back |
+| **MMLU-Pro** — full test set, 12,032 questions ([details](bench/results/mmlu-pro-all.md), 7 strategies on a 700-question sample [here](bench/results/mmlu-pro-700.md)) | **82.8%** (ECE 0.048, $0.29 for the whole set) | 82.9% (nothing beats plain Jev) | 1–3 / q | atomic knowledge questions have no intermediate answers to feed back |
 
 The pattern: **feeding answers back helps exactly when one answer depends on another.** In a single Jev request every question is scored in isolation ([TypeSafe's own parallel-questions cookbook](https://docs.typesafe.ai/cookbooks/parallel_questions) shows batching "adds no noise" precisely because questions never see each other). A rubric whose review flag depends on the risk level, or a ranking whose listwise pick benefits from pointwise scores, gains from a second pass. A ten-option physics question does not.
 
@@ -71,7 +71,9 @@ A decomposition that hurt: adding three extra "facet" nouls per pair (same rule?
 | cot (verify + narrow) | 80.3% | 0.838 | 0.067 | 2 |
 | product (listwise × per-option nouls, one call) | 82.3% | 0.867 | 0.073 | 1 |
 
-Every variant lands within ±2 points of plain Jev (one question is 0.14 points). For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
+Every variant lands within ±2 points of plain Jev (one question is 0.14 points). On the **full test set** ([`mmlu-pro-all.md`](bench/results/mmlu-pro-all.md)) plain Jev scores **82.8%** with ECE 0.048 for $0.29 and nine minutes at 6 concurrent calls; the one-call `product` ensemble scores 82.9%, a difference of 12 questions in 12,032. For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
+
+Per category, full set, plain Jev: biology 91.6 · economics 88.4 · computer science 87.1 · math 87.1 · psychology 86.7 · physics 83.9 · philosophy 83.8 · health 81.8 · other 81.2 · chemistry 80.0 · business 79.2 · history 78.0 · law 77.3 · engineering 75.6.
 
 
 ## Install
@@ -142,7 +144,7 @@ node bench/synthetic/run.mjs                 # 100 memos × 5 strategies        
 N=40  node bench/clerc/run.mjs all           # the cookbook's 40 queries        ≈ 4,000 calls, $0.5
 N=150 node bench/clerc/run.mjs all           # + the other 110 pooled rows      ≈ 15,000 calls, $2
 N=700 node bench/mmlu-pro/run.mjs all        # stratified sample, 7 strategies  ≈ 8,400 calls, $0.3
-N=all node bench/mmlu-pro/run.mjs direct     # full test set, 12,032 questions  ≈ $0.3, 10 min at 12 concurrent
+N=all node bench/mmlu-pro/run.mjs direct     # full test set, 12,032 questions  ≈ $0.3, 9 min at 6 concurrent
 ```
 
 Each run prints a Markdown table and writes it next to the cache (`bench/results/*.md`). Rate limit is 1,200 requests per minute; the client retries 429/5xx with backoff and honours `retry-after`.
