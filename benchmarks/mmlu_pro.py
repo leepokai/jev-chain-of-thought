@@ -22,6 +22,7 @@ def main(sample=700, train_n=200):
     mk = lambda e, **extra: dspy.Example(question=with_options(e.question, e.options), answer=e.answer, category=e.category, **extra).with_inputs("question")
     items = [mk(e) for e in items]
     exemplars = [mk(e, worked_solution=e.worked_solution) for e in val]
+    train_n = min(train_n, len(items) // 3)
     train, test = items[:train_n], items[train_n:]
     sig = mcq_signature(list(LETTERS), "Answer the multiple-choice question.")
     zoo = techniques(sig, train, text_field="question", k=5, many=50, exemplars=exemplars, s2a=False)

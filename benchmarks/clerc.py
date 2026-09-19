@@ -5,6 +5,7 @@ cot (fanout, then listwise over the top 10 with the fanout scores as established
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Annotated, Literal
@@ -62,6 +63,8 @@ def rerank(strategy, query, cands, top_k=10):
 def main():
     lm = configure()
     queries, corpus = clerc()
+    if os.environ.get("N"):  # smoke: first N queries only
+        queries = queries[: int(os.environ["N"])]
     rows, out = [], {}
     for subset_name, subset in (("cookbook 40", [q for q in queries if q.get("cookbook")]), ("all 150", queries)):
         ranks = {"BM25": [q["candidates"].index(q["gold"]) + 1 for q in subset]}

@@ -1,0 +1,34 @@
+{
+ "direct": {
+  "all3": 72.0,
+  "risk_level": 99.0,
+  "requires_review": 87.0,
+  "action_tier": 84.0,
+  "calls_per_doc": 1.0,
+  "cost": 0.004546710000000001
+ },
+ "refine": {
+  "all3": 86.0,
+  "risk_level": 100.0,
+  "requires_review": 99.0,
+  "action_tier": 87.0,
+  "calls_per_doc": 2.16,
+  "cost": 0.01030428
+ },
+ "chain": {
+  "all3": 85.0,
+  "risk_level": 100.0,
+  "requires_review": 93.0,
+  "action_tier": 86.0,
+  "calls_per_doc": 2.0,
+  "cost": 0.007868196000000001
+ },
+ "chain+refine": {
+  "all3": 89.0,
+  "risk_level": 100.0,
+  "requires_review": 99.0,
+  "action_tier": 90.0,
+  "calls_per_doc": 3.1,
+  "cost": 0.013722156000000001
+ }
+}
