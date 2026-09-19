@@ -12,7 +12,7 @@ This package adds the scratchpad in code: ask Jev, render its answers as text, p
 | `chain(state, [steps…, final])` | each step's answers become established facts for the next step | decompose a judgment into the facts it depends on |
 | `choose(state, options)` / `rerank(query, candidates)` | ready-made chains for multiple choice and for ranking | MMLU-style questions, retrieval re-ranking |
 
-> **Status (2026-09-19 evening):** the full technique sweep is in progress. Complete so far: every technique on 8 of the 23 BBH tasks ([`bbh-techniques-partial.md`](bench/results/bbh-techniques-partial.md)), on LegalBench diversity_1, and the six second-pass strategies on MMLU-Pro; the API account ran out of credits mid-sweep (≈ $6 of input tokens spent across all benches). Every cached answer is committed, so `node bench/<bench>/run.mjs all` resumes exactly where it stopped once credits are back; `REPORT_ONLY=1` re-renders the tables without calling the API.
+> **Status:** every technique has been run on every item of every benchmark (2026-09-19). The first ≈ $6 of calls went through TypeSafe's API directly; when that account's credits ran out mid-sweep, the remaining ≈ $3 went through Vercel AI Gateway (`typesafe-ai/jev`, the same model alias) using the same client. All responses are cached under `bench/results/`; `REPORT_ONLY=1 node bench/<bench>/run.mjs all` re-renders any table without a key.
 
 ## Results in one table
 
@@ -144,14 +144,18 @@ Every prompting trick that works on an LLM is a way of putting more useful text 
 
 | LLM technique | What it becomes for Jev | Measured here |
 | --- | --- | --- |
-| Chain-of-thought ([Wei et al. 2022](https://arxiv.org/abs/2201.11903)) | `chain`: the intermediate steps are typed questions you author once per task; their answers become facts in the state | dependent rubric +13 pts (`chain`), +19 with `refine`; BBH typed chains below |
-| Least-to-most ([Zhou et al. 2022](https://arxiv.org/abs/2205.10625)) | progressive state: feed the problem one step at a time, carrying the previous step's answers (BBH tracking: one call per swap) | BBH `tracking` column |
-| Self-refine ([Madaan et al. 2023](https://arxiv.org/abs/2303.17651)) | `refine`: the draft goes back in as fallible evidence until the labels stop changing | rubric +14 pts; MMLU-Pro 0; BBH `refine` column |
-| Self-consistency ([Wang et al. 2022](https://arxiv.org/abs/2203.11171)) | `choose({ strategy: "permute" })`: the same question under shuffled option orders, probabilities averaged (Jev is deterministic, so order is the only sampling axis) | MMLU-Pro −0.2 pts |
-| Chain-of-verification ([Dhuliawala et al. 2023](https://arxiv.org/abs/2309.11495)) | draft → one `noul` "is the draft correct?" → final with both in the state | BBH `cove` column |
-| Few-shot / few-shot CoT ([Brown et al. 2020](https://arxiv.org/abs/2005.14165)) | the official BBH exemplars as structured `instructions`: question → answer, or question → worked solution | BBH `fewshot`, `fewshot-cot` columns |
-| Program-aided reasoning ([Gao et al. 2022](https://arxiv.org/abs/2211.10435)) | Jev finds the facts, code applies the rule (`code` strategy: `diverse && amount > 75k`) | LegalBench `code` column |
-| Forward chaining (fixed-point iteration) | ask every fact at once and `refine`: a truth value propagates one hop per round (BBH web-of-lies) | BBH `propagate` column |
+| Chain-of-thought ([Wei et al. 2022](https://arxiv.org/abs/2201.11903)) | `chain`: the intermediate steps are typed questions you author once per task; their answers become facts in the state | rubric +13 (`chain`), +19 with `refine`; LegalBench diversity_5 +15, hearsay +8.5; BBH typed chains neutral or worse (Jev already at 92% direct) |
+| Least-to-most ([Zhou et al. 2022](https://arxiv.org/abs/2205.10625)) | progressive state: feed the problem one step at a time, carrying the previous step's answers (BBH tracking: one call per swap) | BBH tracking 90–98 → 80–84: one call per swap adds error, removes none |
+| Self-refine ([Madaan et al. 2023](https://arxiv.org/abs/2303.17651)) | `refine`: the draft goes back in as fallible evidence until the labels stop changing | rubric +14; LegalBench 0; MMLU-Pro −1; BBH +0.2 mean (disambiguation +10) |
+| Self-consistency ([Wang et al. 2022](https://arxiv.org/abs/2203.11171)) | `choose({ strategy: "permute" })`: the same question under shuffled option orders, probabilities averaged (Jev is deterministic, so order is the only sampling axis) | MMLU-Pro −0.2; BBH 0.0; LegalBench 0 |
+| Chain-of-verification ([Dhuliawala et al. 2023](https://arxiv.org/abs/2309.11495)) | draft → one `noul` "is the draft correct?" → final with both in the state | BBH 0.0 mean (disambiguation +12); LegalBench 0; MMLU-Pro −0.1: never better than the cheaper `refine` |
+| Few-shot / few-shot CoT ([Brown et al. 2020](https://arxiv.org/abs/2005.14165)) | the official BBH exemplars as structured `instructions`: question → answer, or question → worked solution | BBH −0.2 to −0.3 mean (disambiguation +14, tracking −6 to −11); MMLU-Pro −1.5 to −1.8; LegalBench diversity_5 +17 / diversity_6 −5 |
+| Program-aided reasoning ([Gao et al. 2022](https://arxiv.org/abs/2211.10435)) | Jev finds the facts, code applies the rule (`code` strategy: `diverse && amount > 75k`) | LegalBench: best or tied on every task (diversity_5 89.7, diversity_6 90.3), one call |
+| Forward chaining (fixed-point iteration) | ask every fact at once and `refine`: a truth value propagates one hop per round (BBH web-of-lies) | BBH web_of_lies: 100% either way, plain Jev already solves it |
+| Role prompting, emotional stimuli ([Li et al. 2023](https://arxiv.org/abs/2307.11760)), zero-shot CoT ([Kojima et al. 2022](https://arxiv.org/abs/2205.11916)) | the same sentence appended to `instructions` | noise on all three benchmarks (±0.5) |
+| Re-reading ([Xu et al. 2023](https://arxiv.org/abs/2309.06275)) | the state included twice | BBH −0.2 mean; LegalBench −14 to +6 by task; MMLU-Pro 0 |
+| Prompt ensembling / majority vote | three instruction framings averaged; offline vote over nine single-call variants | equals `direct` everywhere |
+| kNN in-context examples ([Liu et al. 2021](https://arxiv.org/abs/2101.06804)), contrastive CoT ([Chia et al. 2023](https://arxiv.org/abs/2311.09277)) | five lexically nearest labelled items (leave-one-out); exemplars shown with a wrong answer beside the right one | same sign as plain few-shot on every task, never better than it |
 | Tree of thoughts / beam search | TypeSafe's [hierarchical-classification cookbook](https://docs.typesafe.ai/cookbooks/hierarchical_classification) already does beam search over `choice` probabilities; not duplicated here | — |
 | Retrieval augmentation | out of scope; it is the one lever left for knowledge questions like MMLU-Pro | — |
 
@@ -228,6 +232,27 @@ Three things to read off this table:
 - **The gain is where the structure is.** diversity_1–4 are one plaintiff, one defendant, few claims: plain Jev is at or near ceiling and nothing moves. diversity_5 and 6 add parties and claims that must not be aggregated, and the chain adds 15 and 9 points; hearsay adds 8.5; personal jurisdiction 6. `refine` alone (the draft fed back, no new questions) adds nothing anywhere, the same as on MMLU-Pro: the second call needs new facts in it, not the old answer.
 - **Once the facts are typed, code can apply the rule.** `code` asks the same sub-condition questions and applies the statute in JavaScript (`diverse && amount_ok`) for one call. It matches or beats the chain, which is TypeSafe's own recommendation ("code for exact computation, Jev for judgment"). The chain is for rules you cannot or do not want to write as code; the sub-condition table shows both read the facts equally well (diversity_5: parties 86%, amount 98%).
 - **Against the LLMs in the LegalBench paper**, Jev with a two-call chain scores above the paper's GPT-4 correctness on diversity_5 (87.3 vs 76.6), diversity_6 (88.7 vs 80.0) and hearsay (87.2 vs 75.5), and below it on personal jurisdiction (92.0 vs 94.0), for about $0.00004 per call. Those are the paper's 2023 measurements (Table 59, "correctness" as judged by the authors, with the paper's prompts), not a fresh run; they are quoted for scale, not as a controlled comparison.
+
+#### Thirteen techniques on the LegalBench rule tasks
+
+| | direct | role | emotion | zs-CoT | re-read | prompt-ens. | permute | few-shot | kNN | contrastive | refine | CoVe | **chain** | **code** | vote |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| diversity_3 | 93.0 | 91.3 | 92.0 | 91.0 | 90.0 | 91.7 | 91.7 | 90.7 | 89.7 | 90.0 | 92.7 | 92.3 | **93.7** | 93.0 | 90.7 |
+| diversity_4 | 94.0 | 97.0 | 96.7 | 97.3 | **100** | 95.3 | 94.0 | 97.3 | 97.0 | 98.7 | 95.0 | 94.7 | 94.3 | 93.7 | 97.3 |
+| diversity_5 | 72.3 | 73.0 | 69.3 | 76.7 | 58.3 | 75.0 | 72.0 | 89.0 | 86.3 | 88.7 | 72.0 | 70.7 | 87.3 | **89.7** | 78.0 |
+| diversity_6 | 79.7 | 76.7 | 80.3 | 81.3 | 83.3 | 79.7 | 79.0 | 74.3 | 74.0 | 72.3 | 80.7 | 79.0 | 88.7 | **90.3** | 77.3 |
+| hearsay | 78.7 | 80.9 | 81.9 | 81.9 | 78.7 | 81.9 | 79.8 | 81.9 | 83.0 | 80.9 | 77.7 | 77.7 | **87.2** | **87.2** | 81.9 |
+| personal_jurisdiction | 86.0 | 86.0 | 86.0 | 88.0 | 92.0 | 84.0 | 86.0 | 92.0 | 88.0 | 90.0 | 88.0 | 90.0 | **92.0** | **92.0** | 88.0 |
+| calls / row | 1 | 1 | 1 | 1 | 1 | 3 | 2 | 1 | 1 | 1 | 2 | 3 | 2 | 1 | 0 |
+
+(diversity_1 and 2 are 100% for every column. Exemplars here are five other labelled rows of the same task, leave-one-out; kNN picks the five lexically closest.)
+
+The rule tasks separate the techniques more sharply than BBH does:
+
+- **Decomposition is the only technique that wins everywhere.** `chain` and `code` are best or tied on every task, and they are the only columns that never fall below `direct`.
+- **Exemplars are a coin flip.** Five labelled examples lift diversity_5 by 17 points (89.0, as good as the chain) and *cut* diversity_6 by 5 to 7 points; on hearsay they add 3, on personal jurisdiction 6. Same technique, same dataset family, opposite sign. The chain gets the diversity_5 gain without the diversity_6 loss because it asks for the two facts the statute names rather than showing the model other cases.
+- **Re-reading is high-variance**: 100% on diversity_4 (+6) and 58.3% on diversity_5 (−14). Duplicating the state is not free for a model that reads once.
+- **Wording, ensembles, self-refine, CoVe, majority vote**: within noise of `direct` on every task, the same verdict as BBH and MMLU-Pro.
 
 
 ## Reproduce
