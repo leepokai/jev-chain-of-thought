@@ -1,5 +1,8 @@
-node_modules/
-bench/data/
-bench/.venv/
+.venv/
+data/
 .env*
 *.log
+__pycache__/
+*.egg-info/
+build/
+dist/

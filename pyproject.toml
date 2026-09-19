@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dspy-jev"
+version = "0.1.0"
+description = "TypeSafe's Jev as a DSPy language model, with the prompting techniques that survive a model that never generates text, measured on BIG-Bench Hard, LegalBench, MMLU-Pro and CLERC."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "leepokai" }]
+requires-python = ">=3.10"
+dependencies = ["dspy>=3.3", "requests>=2.31"]
+keywords = ["dspy", "jev", "typesafe", "prompting", "chain-of-thought", "gepa", "bbh", "legalbench", "mmlu-pro"]
+classifiers = ["License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3"]
+
+[project.optional-dependencies]
+bench = ["datasets>=3", "bm25s>=0.2"]
+test = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/leepokai/llm-prompt-techniques-on-jev"
+
+[tool.setuptools]
+packages = ["dspy_jev"]
