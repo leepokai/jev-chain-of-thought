@@ -37,7 +37,7 @@ def load(spec):
     return sig, train[:35], train[35:], test
 
 
-def main(specs):
+def main(specs, only=None):
     lm = configure()
     rlm = reflection_lm()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -46,8 +46,15 @@ def main(specs):
         sig, train, val, test = load(spec)
         base = Predict(sig)
         row = {"task": spec, "train / val / test": f"{len(train)} / {len(val)} / {len(test)}", "direct": f"{evaluate(base, test, exact('answer')):.1f}"}
+        prev = json.loads((OUT / "summary.json").read_text()) if (OUT / "summary.json").exists() else {}
+        for k, v in prev.items():  # keep results of the optimizer not being re-run
+            if k.startswith(spec + "/") and (only is None or not k.endswith("/" + ("GEPA" if only == "gepa" else "MIPROv2"))):
+                out[k] = v
+                row[k.split("/")[1]] = f"{v['acc']:.1f}"
         for name, make in (("GEPA", lambda: dspy.GEPA(metric=feedback_metric("answer"), auto="light", reflection_lm=rlm, num_threads=16, track_stats=False)),
-                           ("MIPROv2", lambda: dspy.MIPROv2(metric=exact("answer"), prompt_model=rlm, task_model=lm, auto="light", num_threads=16, max_bootstrapped_demos=0, max_labeled_demos=4, verbose=False))):
+                           ("MIPROv2", lambda: dspy.MIPROv2(metric=exact("answer"), prompt_model=rlm, task_model=lm, auto="light", num_threads=16, max_bootstrapped_demos=2, max_labeled_demos=4, verbose=False))):
+            if only and name.lower() != only:
+                continue
             m = Meter(lm)
             try:
                 opt = make().compile(Predict(sig), trainset=train, valset=val, **({"requires_permission_to_run": False} if name == "MIPROv2" else {}))
@@ -69,4 +76,5 @@ def main(specs):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or DEFAULT)
+    only = sys.argv[sys.argv.index("--only") + 1] if "--only" in sys.argv else None
+    main([a for a in sys.argv[1:] if not a.startswith("--") and a != only] or DEFAULT, only)

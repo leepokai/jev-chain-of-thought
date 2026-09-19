@@ -1,0 +1,26 @@
+{
+  "traces": [],
+  "train": [],
+  "demos": [],
+  "signature": {
+    "instructions": "A federal court has diversity jurisdiction over a claim when (1) the parties are completely diverse: no plaintiff is a citizen of the same state as any defendant, and (2) the amount in controversy exceeds $75,000.\n\nImportant aggregation rules:\n- A single plaintiff may aggregate ALL of their claims against a single defendant to reach the $75,000 threshold\n- Claims by different plaintiffs against the same defendant are NOT aggregated\n- Claims by the same plaintiff against different defendants are NOT aggregated\n\nGiven a set of facts describing plaintiffs, defendants, their states of citizenship, and the claims being brought with their amounts, determine whether federal diversity jurisdiction exists.\n\nStep-by-step approach:\n\nSTEP 1 - Check Complete Diversity:\n- Identify ALL plaintiffs and their states of citizenship\n- Identify ALL defendants and their states of citizenship\n- Compare EVERY plaintiff's state against EVERY defendant's state\n- If ANY plaintiff shares the same state of citizenship as ANY defendant, complete diversity FAILS\n- Complete diversity requires that no plaintiff is from the same state as any defendant\n\nSTEP 2 - Check Amount in Controversy (only if Step 1 passes):\n- For each plaintiff individually, sum all their claims against each defendant separately\n- If ANY single plaintiff has aggregated claims against ANY single defendant totaling MORE than $75,000, the amount requirement is satisfied\n- Remember: the threshold is exceeded only when the total is MORE than $75,000 (not equal to)\n\nReturn True if and only if BOTH conditions are met:\n1. Complete diversity exists (no plaintiff shares citizenship with any defendant)\n2. At least one plaintiff has claims against a single defendant that total more than $75,000\n\nReturn False if either condition fails.\n\nCritical reminders:\n- When there are multiple plaintiffs, check EACH plaintiff's citizenship against EACH defendant's citizenship\n- A single violation of diversity (one plaintiff from the same state as one defendant) destroys complete diversity for the entire case\n- Each plaintiff aggregates only their own claims against each defendant separately",
+    "fields": [
+      {
+        "prefix": "Facts:",
+        "description": "${facts}"
+      },
+      {
+        "prefix": "Answer:",
+        "description": "Is there diversity jurisdiction over this case?"
+      }
+    ]
+  },
+  "lm": null,
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.3.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}
