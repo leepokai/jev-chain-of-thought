@@ -82,14 +82,13 @@ def feedback_metric(field: str):
 
 
 class Meter:
-    """Calls and input tokens the LM made since the meter was started."""
+    """Calls and input tokens since the meter was started, cache hits included (i.e. what a cold run costs)."""
 
     def __init__(self, lm):
-        self.lm, self.start = lm, len(lm.history)
+        self.lm, self.c0, self.t0 = lm, lm.calls, lm.input_tokens
 
     def read(self) -> tuple[int, int]:
-        h = self.lm.history[self.start:]
-        return len(h), sum((e.get("usage") or {}).get("prompt_tokens", 0) if isinstance(e, dict) else getattr(getattr(e, "response", None), "usage", None).prompt_tokens or 0 for e in h)
+        return self.lm.calls - self.c0, self.lm.input_tokens - self.t0
 
 
 def evaluate(program, devset, metric, threads=16) -> float:

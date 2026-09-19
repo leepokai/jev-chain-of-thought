@@ -13,23 +13,30 @@ import dspy
 
 from benchmarks.common import Meter, PRICE, configure, exact, log, table, techniques, write
 from benchmarks.data import BBH_TASKS, bbh
-from benchmarks.mcq import mcq_signature, with_options
+from benchmarks.mcq import mcq_signature, mcq_signature_criteria, with_options
 
 TRAIN, TEST = 50, 100
+OPTIONS = "text"  # "text": options listed inside the question (BBH prompt format); "criteria": option texts as the choice's criteria
 
 
-def prepare(task):
+def prepare(task, options=None):
+    options = options or OPTIONS
     examples, official = bbh(task)
     letters = sorted({l for e in examples for l in e.options}, key=lambda l: (len(l), l))
-    sig = mcq_signature(letters, official["description"])
-    items = [dspy.Example(question=with_options(e.question, e.options), answer=e.answer).with_inputs("question") for e in examples]
-    exemplars = [dspy.Example(question=x["question"], answer=x["answer"], worked_solution=x["worked_solution"]).with_inputs("question") for x in official["exemplars"] if x["answer"] in letters]
+    if options == "criteria":
+        sig = mcq_signature_criteria(letters, official["description"])
+        items = [dspy.Example(question=e.question, answer_options=e.options, answer=e.answer).with_inputs("question", "answer_options") for e in examples]
+        exemplars = [dspy.Example(question=x["question"], answer=x["answer"], worked_solution=x["worked_solution"]).with_inputs("question") for x in official["exemplars"] if x["answer"] in letters]
+    else:
+        sig = mcq_signature(letters, official["description"])
+        items = [dspy.Example(question=with_options(e.question, e.options), answer=e.answer).with_inputs("question") for e in examples]
+        exemplars = [dspy.Example(question=x["question"], answer=x["answer"], worked_solution=x["worked_solution"]).with_inputs("question") for x in official["exemplars"] if x["answer"] in letters]
     return sig, items[:TRAIN], items[TRAIN:TRAIN + TEST], exemplars
 
 
-def main(tasks, test_n=TEST):
-    global TEST
-    TEST = test_n
+def main(tasks, test_n=TEST, options="text"):
+    global TEST, OPTIONS
+    TEST, OPTIONS = test_n, options
     lm = configure()
     out, rows = {}, []
     for task in tasks:
@@ -48,11 +55,14 @@ def main(tasks, test_n=TEST):
     rows.append({"task": "**mean over tasks**", "n": "", **{n: f"{sum(out[t][n]['acc'] for t in tasks if n in out[t]) / max(1, sum(n in out[t] for t in tasks)):.1f}" for n in names}})
     rows.append({"task": "calls / item", "n": "", **{n: f"{sum(out[t][n]['calls_per_item'] for t in tasks if n in out[t]) / max(1, sum(n in out[t] for t in tasks)):.2f}" for n in names}})
     rows.append({"task": "cost, all tasks", "n": "", **{n: f"${sum(out[t][n]['cost'] for t in tasks if n in out[t]):.2f}" for n in names}})
-    write("bbh.md", f"# BIG-Bench Hard ({len(tasks)} tasks, {TEST} test items each; model {lm.model} via {lm._resolve()['kind']})\n\n{table(rows)}\n")
-    (Path(__file__).resolve().parent.parent / "results" / "bbh.json").write_text(json.dumps(out, indent=1))
+    suffix = "" if OPTIONS == "text" else f"-{OPTIONS}"
+    write(f"bbh{suffix}.md", f"# BIG-Bench Hard ({len(tasks)} tasks, {TEST} test items each, options as {OPTIONS}; model {lm.model} via {lm._resolve()['kind']})\n\n{table(rows)}\n")
+    (Path(__file__).resolve().parent.parent / "results" / f"bbh{suffix}.json").write_text(json.dumps(out, indent=1))
 
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     n = int(sys.argv[sys.argv.index("--test") + 1]) if "--test" in sys.argv else TEST
-    main(args or BBH_TASKS, n)
+    opt = sys.argv[sys.argv.index("--options") + 1] if "--options" in sys.argv else "text"
+    args = [a for a in args if a not in (str(n), opt)]
+    main(args or BBH_TASKS, n, opt)

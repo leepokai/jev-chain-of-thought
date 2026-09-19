@@ -13,18 +13,22 @@ import dspy
 
 from benchmarks.common import Meter, PRICE, configure, exact, log, table, techniques, write
 from benchmarks.data import LETTERS, mmlu_pro
-from benchmarks.mcq import mcq_signature, with_options
+from benchmarks.mcq import mcq_signature, mcq_signature_criteria, with_options
 
 
-def main(sample=700, train_n=200):
+def main(sample=700, train_n=200, options="text"):
     lm = configure()
     items, val = mmlu_pro(sample)
-    mk = lambda e, **extra: dspy.Example(question=with_options(e.question, e.options), answer=e.answer, category=e.category, **extra).with_inputs("question")
+    if options == "criteria":
+        mk = lambda e, **extra: dspy.Example(question=e.question, answer_options=e.options, answer=e.answer, category=e.category, **extra).with_inputs("question", "answer_options")
+        sig = mcq_signature_criteria(list(LETTERS), "Answer the multiple-choice question.")
+    else:
+        mk = lambda e, **extra: dspy.Example(question=with_options(e.question, e.options), answer=e.answer, category=e.category, **extra).with_inputs("question")
+        sig = mcq_signature(list(LETTERS), "Answer the multiple-choice question.")
     items = [mk(e) for e in items]
     exemplars = [mk(e, worked_solution=e.worked_solution) for e in val]
     train_n = min(train_n, len(items) // 3)
     train, test = items[:train_n], items[train_n:]
-    sig = mcq_signature(list(LETTERS), "Answer the multiple-choice question.")
     zoo = techniques(sig, train, text_field="question", k=5, many=50, exemplars=exemplars, s2a=False)
     rows, out = [], {}
     for name, prog in zoo.items():
@@ -34,9 +38,11 @@ def main(sample=700, train_n=200):
         out[name] = {"acc": res.score, "calls_per_q": calls / len(test), "cost": tokens * PRICE}
         rows.append({"technique": name, "accuracy": f"{res.score:.1f}", "calls / q": f"{calls / len(test):.2f}", "cost": f"${tokens * PRICE:.3f}"})
         log(f"mmlu-pro {name}: {res.score:.1f}%  ({calls / len(test):.1f} calls/q, ${tokens * PRICE:.3f})")
-    write("mmlu-pro.md", f"# MMLU-Pro ({len(test)} test questions of a {sample}-question stratified sample; model {lm.model} via {lm._resolve()['kind']})\n\n{table(rows)}\n")
-    (Path(__file__).resolve().parent.parent / "results" / "mmlu-pro.json").write_text(json.dumps(out, indent=1))
+    suffix = "" if options == "text" else f"-{options}"
+    write(f"mmlu-pro{suffix}.md", f"# MMLU-Pro ({len(test)} test questions of a {sample}-question stratified sample, options as {options}; model {lm.model} via {lm._resolve()['kind']})\n\n{table(rows)}\n")
+    (Path(__file__).resolve().parent.parent / "results" / f"mmlu-pro{suffix}.json").write_text(json.dumps(out, indent=1))
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else 700)
+    main(int(sys.argv[sys.argv.index("--sample") + 1]) if "--sample" in sys.argv else 700,
+         options=sys.argv[sys.argv.index("--options") + 1] if "--options" in sys.argv else "text")

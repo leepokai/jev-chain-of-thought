@@ -15,6 +15,12 @@ def mcq_signature(letters: list[str], instructions: str, question_desc: str = "W
     return sig.with_updated_fields("answer", type_=Annotated[Literal[tuple(letters)], crit])
 
 
+def mcq_signature_criteria(letters: list[str], instructions: str, question_desc: str = "Which option is correct?"):
+    """`question, answer_options -> answer`: the options travel as per-example criteria (option text as the description), not as state."""
+    sig = dspy.Signature({"question": dspy.InputField(), "answer_options": dspy.InputField(), "answer": dspy.OutputField(desc=question_desc)}, instructions)
+    return sig.with_updated_fields("answer", type_=Literal[tuple(letters)])
+
+
 def with_options(question: str, options: dict[str, str]) -> str:
     if all(k == v for k, v in options.items()):  # Yes/No, True/False: the options are the answers themselves
         return f"{question}\nOptions:\n" + "\n".join(f"- {k}" for k in options)

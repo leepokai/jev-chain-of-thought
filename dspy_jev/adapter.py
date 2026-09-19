@@ -4,7 +4,9 @@ Output field types that Jev can answer:
   - `bool`                                            -> noul   (optional `Annotated[bool, Criteria(true=..., false=...)]`)
   - `Literal["a", "b", ...]`                          -> choice (optional `Annotated[Literal[...], Criteria(a="...", b="...")]`)
   - `Annotated[float, Levels("level 0", "level 1", …)]` -> score
-Input fields become the `state` (one field: its value as is; several: an object keyed by field name).
+Input fields become the `state` (one field: its value as is; several: an object keyed by field name). An input field named
+`<choice_field>_options` (a dict option -> description) supplies per-example option descriptions for that choice and is not sent as state:
+the model then sees only the options present in that example, described by their text.
 The signature's instructions become `task`, each field's `desc` its question, and few-shot demos go in as `examples`.
 `dspy_jev.Predict` (and every module here) attaches `pred.jev`: the raw answers with probabilities and confidence.
 """
@@ -55,8 +57,8 @@ def _humanize(name: str) -> str:
     return name.replace("_", " ").strip().capitalize() + "?"
 
 
-def question_for(name: str, field, task: str | None, examples: list | None) -> dict:
-    """One Jev question for one output field."""
+def question_for(name: str, field, task: str | None, examples: list | None, options: dict | None = None) -> dict:
+    """One Jev question for one output field. `options` overrides the choice criteria for this example."""
     ann, extra = field.annotation, _extra(field)
     desc = extra.get("desc") or field.description or _humanize(name)
     instr: dict[str, Any] = {"question": desc}
@@ -68,6 +70,8 @@ def question_for(name: str, field, task: str | None, examples: list | None) -> d
     if ann is bool:
         return {"type": "noul", "instructions": instr, "criteria": {"true": crit.get("true", crit.get(True, "Yes.")), "false": crit.get("false", crit.get(False, "No."))}}
     if get_origin(ann) is Literal:
+        if options:
+            return {"type": "choice", "instructions": instr, "criteria": {str(v): str(d) for v, d in options.items()}}
         return {"type": "choice", "instructions": instr, "criteria": {str(v): crit.get(v, crit.get(str(v), str(v))) for v in get_args(ann)}}
     if levels is not None:
         return {"type": "score", "instructions": instr, "criteria": list(levels)}
@@ -90,13 +94,14 @@ def render(answers: dict[str, dict]) -> str:
 
 class JevAdapter(Adapter):
     def format(self, signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]:
-        in_names = list(signature.input_fields)
+        opt_fields = {f"{o}_options": o for o in signature.output_fields if f"{o}_options" in signature.input_fields}
+        in_names = [k for k in signature.input_fields if k not in opt_fields]
         state = inputs[in_names[0]] if len(in_names) == 1 else {k: inputs[k] for k in in_names if k in inputs}
-        examples = [{"input": {k: d[k] for k in in_names if k in d}, "output": {k: v for k, v in d.items() if k not in in_names and not k.startswith("_")}} for d in demos] or None
+        examples = [{"input": {k: d[k] for k in in_names if k in d}, "output": {k: v for k, v in d.items() if k not in in_names and k not in opt_fields and not k.startswith("_")}} for d in demos] or None
         task = (signature.instructions or "").strip() or None
         if task == _default_instructions(signature):  # DSPy's auto-generated "Given the fields …" carries no information
             task = None
-        questions = {name: question_for(name, f, task, examples) for name, f in signature.output_fields.items()}
+        questions = {name: question_for(name, f, task, examples, inputs.get(f"{name}_options") if f"{name}_options" in opt_fields else None) for name, f in signature.output_fields.items()}
         return [{"role": "user", "content": json.dumps({"state": state, "questions": questions}, default=str)}]
 
     def parse(self, signature: type[Signature], completion: str) -> dict[str, Any]:

@@ -130,3 +130,17 @@ def test_score_levels():
         pred = Predict(Harm)(text="t")
     assert lm.session.calls[0]["questions"]["severity"] == {"type": "score", "instructions": {"question": "How much harm?"}, "criteria": ["no harm", "minor", "major"]}
     assert pred.severity == 1.4
+
+
+def test_per_example_options_become_criteria():
+    class MCQ(dspy.Signature):
+        question: str = dspy.InputField()
+        answer_options: dict = dspy.InputField()
+        answer: Literal["A", "B", "C", "D"] = dspy.OutputField(desc="Which option is correct?")
+
+    lm = lm_with(lambda qid, q, s: ("B", {"A": 0.1, "B": 0.9}))
+    with dspy.context(lm=lm, adapter=JevAdapter()):
+        pred = Predict(MCQ)(question="q?", answer_options={"A": "apples", "B": "pears"})
+    call = lm.session.calls[0]
+    assert call["state"] == "q?" and call["questions"]["answer"]["criteria"] == {"A": "apples", "B": "pears"}
+    assert pred.answer == "B"

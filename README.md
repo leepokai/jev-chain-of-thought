@@ -1,294 +1,80 @@
 # LLM prompt techniques on Jev
 
-**Every LLM prompting technique that can be translated for a model that never generates text, translated for [TypeSafe's Jev](https://typesafe.ai) and measured on BIG-Bench Hard, LegalBench, MMLU-Pro and CLERC.** Package: `npm install llm-prompt-techniques-on-jev` — `refine`, `chain`, `choose`, `rerank`, zero dependencies.
-
-Jev is a *System One* model: it never generates text, it answers typed questions (`choice`, `noul`, `score`) about a `state` and returns calibrated probabilities. That makes it 100× cheaper than an LLM judge, but it also means it has no scratchpad. Every question in a request is scored on its own; a question cannot see what Jev answered to the question next to it, and Jev cannot revise an answer after seeing its own first draft.
-
-This package adds the scratchpad in code: ask Jev, render its answers as text, put that text back into the state, ask again. Three primitives, zero dependencies, one fetch:
-
-| primitive | what it does | when it helps |
-| --- | --- | --- |
-| `refine(state, questions)` | ask, feed the draft back, ask again until the labels stop changing | rubrics where one answer depends on another |
-| `chain(state, [steps…, final])` | each step's answers become established facts for the next step | decompose a judgment into the facts it depends on |
-| `choose(state, options)` / `rerank(query, candidates)` | ready-made chains for multiple choice and for ranking | MMLU-style questions, retrieval re-ranking |
-
-> **Status:** every technique has been run on every item of every benchmark (2026-09-19). The first ≈ $6 of calls went through TypeSafe's API directly; when that account's credits ran out mid-sweep, the remaining ≈ $3 went through Vercel AI Gateway (`typesafe-ai/jev`, the same model alias) using the same client. All responses are cached under `bench/results/`; `REPORT_ONLY=1 node bench/<bench>/run.mjs all` re-renders any table without a key.
-
-## Results in one table
-
-Three benchmarks, one model (`jev-1.13.0`, September 2026), every Jev response cached under [`bench/results/`](bench/results) so the tables re-render without a key.
-
-| benchmark | plain Jev | jev-chain-of-thought | calls | what changed |
-| --- | --- | --- | --- | --- |
-| **Dependent rubric** — 100 transaction memos, 3 questions where `requires_review` depends on `risk_level` ([details](bench/results/synthetic.md)) | 74% all-3-correct | **93%** (`chain` + `refine`) | 3.1 / doc | the questions can finally see each other's answers |
-| **CLERC legal re-ranking** — TypeSafe's own cookbook, replicated exactly ([details](bench/results/clerc-150.md)) | top-1 23% · MRR 0.378 · **30 calls/query** (the cookbook's method) | top-1 27% · MRR 0.402 · **2 calls/query** (`rerank`, fanout + listwise) | 7% of the calls, 72% of the tokens | same or better ranking at a fraction of the cost; the accuracy gain itself is within noise at n=150 |
-| **LegalBench rule application** — diversity jurisdiction, hearsay, personal jurisdiction, 2,144 rows ([details](bench/results/legalbench.md)) | diversity_5 72.3% · hearsay 78.7% | **87.3% · 87.2%** (`chain`: ask the statute's sub-conditions first) | 2 / row | above the GPT-4 correctness the LegalBench paper reports on three of four tasks |
-| **BIG-Bench Hard** — 23 option-answer tasks, 5,571 items ([details](bench/results/bbh.md)) | **91.8%** mean, one call | 92.0% (best of 13 techniques and 5 typed chains) | 1–7 / item | the chain-of-thought benchmark needs no chain-of-thought from Jev; few-shot exemplars fix the one task about label semantics (70 → 85) |
-| **MMLU-Pro** — full test set, 12,032 questions ([details](bench/results/mmlu-pro-all.md), 7 strategies on a 700-question sample [here](bench/results/mmlu-pro-700.md)) | **82.8%** (ECE 0.048, $0.29 for the whole set) | 82.9% (nothing beats plain Jev) | 1–3 / q | atomic knowledge questions have no intermediate answers to feed back |
-
-The pattern: **feeding answers back helps exactly when one answer depends on another.** In a single Jev request every question is scored in isolation ([TypeSafe's own parallel-questions cookbook](https://docs.typesafe.ai/cookbooks/parallel_questions) shows batching "adds no noise" precisely because questions never see each other). A rubric whose review flag depends on the risk level, or a ranking whose listwise pick benefits from pointwise scores, gains from a second pass. A ten-option physics question does not.
-
-### Against TypeSafe's published numbers
-
-TypeSafe publishes its results as cookbooks. The one with a public dataset and a hard number is [re-ranking on CLERC](https://docs.typesafe.ai/cookbooks/rerank_typesafe): 40 legal queries, a BM25 shortlist of 30 from 3,565 court-opinion passages, one `noul` per query–candidate pair on `jev-1.12`.
-
-`bench/clerc/prepare.py` rebuilds that slice byte-for-byte (same seed, same 170 pooled rows, same `bm25s` shortlist: BM25 alone lands the gold passage at rank 1 for 5%, top-5 15%, top-10 38%, exactly as the cookbook reports). On those 40 queries:
-
-| method | calls / query | top-1 | top-5 | top-10 | cost (40 queries) |
-| --- | --- | --- | --- | --- | --- |
-| TypeSafe cookbook, `jev-1.12`, pointwise | 30 | 18% | 35% | 62% | $0.065 (their figure) |
-| same method replicated on `jev-1.13.0` | 30 | 32.5% | 52.5% | 72.5% | $0.070 |
-| `rerank` listwise (one `choice` over 30 ids) | **1** | 32.5% | 60.0% | **85.0%** | **$0.035** |
-| `rerank` cot30 (pointwise draft → listwise over all 30) | 31 | **37.5%** | 60.0% | 75.0% | $0.106 |
-| `rerank` default (fanout → listwise over top 10) | **2** | 32.5% | 60.0% | 75.0% | $0.051 |
-
-Two honest caveats. Most of the jump over the cookbook's 18 / 35 / 62 comes from the model version, not from this package: the plain replica already scores 32.5 / 52.5 / 72.5 on `jev-1.13.0`. And 40 queries is too few to separate methods, so the bench also runs the other 110 pooled rows under the identical protocol (150 queries, [`clerc-150.md`](bench/results/clerc-150.md)): the 2-call default reaches MRR 0.402 vs 0.378 for the 30-call cookbook method, but a paired bootstrap puts that difference at +0.023 with a 95% interval of [−0.026, +0.062]. What *is* robust is the cost side: one or two calls per query, with the query sent once and the candidates inside isolated questions, match the 30-call design.
-
-A decomposition that hurt: adding three extra "facet" nouls per pair (same rule? shared wording? authoritative language?) and averaging log-odds drops MRR by 0.12 with a confidence interval well below zero. Jev's single well-written question beats a composite of weaker ones. `rerank` keeps `facets` as an option; the bench keeps the negative result.
-
-### Where the feedback loop wins outright
-
-[`bench/synthetic`](bench/synthetic/run.mjs): 100 OCR-noised transaction memos with a written rubric. `risk_level` is a sum of amount, origin and note points; `requires_review` is true when risk is HIGH or MEDIUM or the note mentions a dispute; `action_tier` depends on risk and amount. Three questions, one document, gold labels computed by the generator.
-
-| strategy | risk_level | requires_review | action_tier | all 3 | calls / doc |
-| --- | --- | --- | --- | --- | --- |
-| direct (one call) | 99% | 88% | 84% | 74% | 1 |
-| `refine` (feed the draft back until it stops changing) | 100% | 99% | 89% | 88% | 2.2 |
-| `chain` (ask the three rubric inputs first, then the judgment) | 100% | 93% | 88% | 87% | 2 |
-| `chain` + `refine` | 100% | 97% | 94% | **93%** | 3.1 |
-
-`requires_review` goes from 88% to 99% with one feedback pass, because its rubric is literally "look at `risk_level`" and in a single call it cannot. Convergence takes one round: the second and third passes change 4 and 3 answers out of 100.
-
-**Wrong-draft control.** Feed back a draft taken from a *different* memo (wrong on 87 of 100) and the final answer copies a wrong field on 29 of them; all-3 accuracy drops from 74% to 66%. Jev treats the draft as evidence, so the loop only helps when the draft is Jev's own answer to the same document. Never feed it another model's guess or a stale result.
-
-### Where it does not help
-
-[`bench/mmlu-pro`](bench/mmlu-pro/run.mjs), 700 questions stratified over the 14 MMLU-Pro categories (50 each), options as `choice` criteria, the question and subject as state:
-
-| strategy | accuracy | mean top-p | ECE | calls / q |
-| --- | --- | --- | --- | --- |
-| direct | **82.1%** | 0.840 | **0.059** | 1 |
-| refine (own draft fed back) | 81.1% | 0.856 | 0.063 | 2 |
-| permute (3 option orders averaged) | 81.9% | 0.829 | 0.052 | 3 |
-| verify (+ one "is this option correct?" noul per option, fed back) | 82.1% | 0.861 | 0.073 | 2 |
-| narrow (second choice over the top 3) | 80.9% | 0.829 | 0.076 | 2 |
-| cot (verify + narrow) | 80.3% | 0.838 | 0.067 | 2 |
-| product (listwise × per-option nouls, one call) | 82.3% | 0.867 | 0.073 | 1 |
-
-The thirteen prompting techniques on the same 700 questions ([`mmlu-pro-700.md`](bench/results/mmlu-pro-700.md)):
-
-| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble | permute | few-shot | few-shot CoT | kNN | contrastive | refine | CoVe | vote |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| accuracy | **82.1** | 82.1 | 81.4 | 81.7 | 82.1 | 81.4 | 81.9 | 80.6 | 80.3 | 81.1 | 80.4 | 81.1 | 82.0 | 81.9 |
-| calls / q | 1 | 1 | 1 | 1 | 1 | 3 | 3 | 1 | 1 | 1 | 1 | 2 | 3 | 0 |
-
-Few-shot exemplars (the dataset's own five per-category CoT examples, or five lexical nearest neighbours from the test set) *lower* accuracy by 1–2 points and lower the mean top probability from 0.84 to 0.79: the examples dilute the question. Nothing else moves. Every variant lands within ±2 points of plain Jev (one question is 0.14 points). On the **full test set** ([`mmlu-pro-all.md`](bench/results/mmlu-pro-all.md)) plain Jev scores **82.8%** with ECE 0.048 for $0.29 and nine minutes at 6 concurrent calls; the one-call `product` ensemble scores 82.9%, a difference of 12 questions in 12,032. For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
-
-Per category, full set, plain Jev: biology 91.6 · economics 88.4 · computer science 87.1 · math 87.1 · psychology 86.7 · physics 83.9 · philosophy 83.8 · health 81.8 · other 81.2 · chemistry 80.0 · business 79.2 · history 78.0 · law 77.3 · engineering 75.6.
-
-
-## Install
+**Every LLM prompting technique that survives a model that never generates text, ported to [TypeSafe's Jev](https://typesafe.ai) as a [DSPy](https://dspy.ai) extension and measured on BIG-Bench Hard, LegalBench, MMLU-Pro and CLERC.**
 
 ```bash
-npm install llm-prompt-techniques-on-jev
-export JEV_API_KEY=…        # or TYPESAFE_API_KEY, or `jev-guard key <key>`
+pip install dspy-jev
 ```
 
-Node ≥ 20.3. No dependencies. Works with the TypeSafe API directly (`POST https://api.typesafe.ai/v1/systemone`).
+Jev is a *System One* model: it answers typed questions (`choice`, `noul`, `score`) about a `state` with calibrated probabilities, never writing a token. That makes it ~100× cheaper than an LLM judge and removes the whole "parse the model's prose" step, but it also means most prompting literature does not apply as written: there is no scratchpad, no sampling, no self-generated reasoning. This repo answers two questions with measurements rather than opinions: **which techniques still do something for Jev, and how do you run them without inventing a framework.** The answer to the second is DSPy: `dspy-jev` is a `BaseLM` and an `Adapter`, so signatures, `Evaluate`, `LabeledFewShot`, `KNNFewShot`, `MIPROv2` and `GEPA` all work on Jev unchanged.
 
-## Use
+<!-- RESULTS -->
 
-```js
-import { ask, refine, chain, choose, rerank } from "llm-prompt-techniques-on-jev";
+## Use it
 
-// plain Jev
-const { answers } = await ask(memo, questions);
+```python
+from typing import Annotated, Literal
+import dspy, dspy_jev
+from dspy_jev import Criteria, Levels, Predict, SelfRefine, Chain
 
-// self-refine: ask, feed the draft back, ask again (stops at the fixed point, at most `rounds` extra calls)
-const r = await refine(memo, questions, { rounds: 2 });
-r.answers.risk_level.choice;   // "HIGH"
-r.calls;                       // 2 — converged after one refinement
+dspy_jev.configure()            # JevLM + JevAdapter; key from JEV_API_KEY / TYPESAFE_API_KEY, AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN
 
-// chain of thought: ask the facts first, then the judgment with those facts in the state
-const c = await chain(memo, [
-  { amount_bucket: { type: "choice", instructions: "Which bracket is the amount in?", criteria: { large: ">= 50,000", mid: "10,000–49,999", small: "< 10,000" } } },
-  { risk_level: { type: "choice", instructions: "Risk level under the rubric…", criteria: { HIGH: "…", MEDIUM: "…", LOW: "…" } } },
-], { refine: 1 });
+class Memo(dspy.Signature):
+    """Risk = amount points + origin points + note points. HIGH if >= 4, MEDIUM 2-3, LOW otherwise."""   # -> the question's `task`
+    memo: str = dspy.InputField()                                                                        # -> the `state`
+    risk: Annotated[Literal["HIGH", "MEDIUM", "LOW"], Criteria(HIGH="score >= 4", MEDIUM="2-3", LOW="<= 1")] = dspy.OutputField(desc="Risk level.")  # -> choice
+    review: bool = dspy.OutputField(desc="Needs manual review?")                                          # -> noul
+    severity: Annotated[float, Levels("no harm", "minor", "major")] = dspy.OutputField()                 # -> score
 
-// multiple choice: listwise choice + one "is this option correct?" noul per option, then a second choice over the top 3 with that draft
-const m = await choose({ question, subject: "physics" }, { A: "…", B: "…", C: "…", D: "…" }, { strategy: "cot", k: 3 });
-m.choice; m.probabilities; m.calls;  // 2
-
-// re-ranking: pointwise nouls, then one listwise choice over the top 10 with the pointwise scores as draft
-const k = await rerank(query, { p1: "…", p2: "…", /* … */ }, { instructions: "Does the passage establish the proposition the query cites?", topK: 10 });
-k.ranking;  // ids, best first
+pred = Predict(Memo)(memo="Origin: Iran. Amount: USD 80,174. Notes: routine invoice.")
+pred.risk, pred.review, pred.severity      # 'HIGH', True, 1.9
+pred.jev["risk"]["probabilities"]          # {'HIGH': 0.88, 'MEDIUM': 0.12, 'LOW': 0.0}, plus 'confidence'
 ```
 
-Every call returns `trace` (the raw Jev responses, with `usage` and `ms`) and `calls`. Pass `model: "jev-1.13.0"` to pin a version, `ask: myFetch` to inject a cached or mocked client.
+The adapter maps a signature to one Jev call: `bool` → `noul`, `Literal[...]` → `choice`, `Annotated[float, Levels(...)]` → `score`; input fields become the state, the docstring the task, field `desc` the question, and DSPy demos go in as structured `examples`. `Predict` is `dspy.Predict` plus `.jev` (raw probabilities and confidence). Anything else in DSPy is unchanged:
 
-### How the feedback looks
-
-`feedback(state, answers)` renders answers as one line each and appends them to the state (a string gets a text block, an object gets a `draft_answers` key):
-
-```
---- Draft answers from a previous pass. They may contain errors: re-check each one against the evidence and correct it. ---
-risk_level: HIGH (HIGH 0.88, MEDIUM 0.12, LOW 0.00, NONE 0.00)
-requires_review: true (p=0.91)
+```python
+program = dspy.LabeledFewShot(k=5).compile(Predict(Memo), trainset=train)          # few-shot
+program = dspy.KNNFewShot(k=5, trainset=train, vectorizer=dspy.Embedder(embed), max_bootstrapped_demos=0).compile(Predict(Memo))
+score   = dspy.Evaluate(devset=test, metric=lambda ex, p, trace=None: p.risk == ex.risk, num_threads=16)(program)
+better  = dspy.GEPA(metric=metric_with_feedback, auto="light", reflection_lm=dspy.LM("openai/anthropic/claude-sonnet-4.5", api_base=..., api_key=...)).compile(program, trainset=train, valset=val)
 ```
 
-The wording matters: a draft presented as fact is copied, a draft presented as fallible is checked (see the anchor control below).
+The techniques that need a second call are modules:
 
-## Borrowing LLM prompting techniques
-
-Every prompting trick that works on an LLM is a way of putting more useful text in front of the model before it commits. Jev cannot write that text itself, so the package (or your code) has to. What carries over, what it becomes here, and what it measured:
-
-| LLM technique | What it becomes for Jev | Measured here |
+| module | technique | what it does |
 | --- | --- | --- |
-| Chain-of-thought ([Wei et al. 2022](https://arxiv.org/abs/2201.11903)) | `chain`: the intermediate steps are typed questions you author once per task; their answers become facts in the state | rubric +13 (`chain`), +19 with `refine`; LegalBench diversity_5 +15, hearsay +8.5; BBH typed chains neutral or worse (Jev already at 92% direct) |
-| Least-to-most ([Zhou et al. 2022](https://arxiv.org/abs/2205.10625)) | progressive state: feed the problem one step at a time, carrying the previous step's answers (BBH tracking: one call per swap) | BBH tracking 90–98 → 80–84: one call per swap adds error, removes none |
-| Self-refine ([Madaan et al. 2023](https://arxiv.org/abs/2303.17651)) | `refine`: the draft goes back in as fallible evidence until the labels stop changing | rubric +14; LegalBench 0; MMLU-Pro −1; BBH +0.2 mean (disambiguation +10) |
-| Self-consistency ([Wang et al. 2022](https://arxiv.org/abs/2203.11171)) | `choose({ strategy: "permute" })`: the same question under shuffled option orders, probabilities averaged (Jev is deterministic, so order is the only sampling axis) | MMLU-Pro −0.2; BBH 0.0; LegalBench 0 |
-| Chain-of-verification ([Dhuliawala et al. 2023](https://arxiv.org/abs/2309.11495)) | draft → one `noul` "is the draft correct?" → final with both in the state | BBH 0.0 mean (disambiguation +12); LegalBench 0; MMLU-Pro −0.1: never better than the cheaper `refine` |
-| Few-shot / few-shot CoT ([Brown et al. 2020](https://arxiv.org/abs/2005.14165)) | the official BBH exemplars as structured `instructions`: question → answer, or question → worked solution | BBH −0.2 to −0.3 mean (disambiguation +14, tracking −6 to −11); MMLU-Pro −1.5 to −1.8; LegalBench diversity_5 +17 / diversity_6 −5 |
-| Program-aided reasoning ([Gao et al. 2022](https://arxiv.org/abs/2211.10435)) | Jev finds the facts, code applies the rule (`code` strategy: `diverse && amount > 75k`) | LegalBench: best or tied on every task (diversity_5 89.7, diversity_6 90.3), one call |
-| Forward chaining (fixed-point iteration) | ask every fact at once and `refine`: a truth value propagates one hop per round (BBH web-of-lies) | BBH web_of_lies: 100% either way, plain Jev already solves it |
-| Role prompting, emotional stimuli ([Li et al. 2023](https://arxiv.org/abs/2307.11760)), zero-shot CoT ([Kojima et al. 2022](https://arxiv.org/abs/2205.11916)) | the same sentence appended to `instructions` | noise on all three benchmarks (±0.5) |
-| Re-reading ([Xu et al. 2023](https://arxiv.org/abs/2309.06275)) | the state included twice | BBH −0.2 mean; LegalBench −14 to +6 by task; MMLU-Pro 0 |
-| Prompt ensembling / majority vote | three instruction framings averaged; offline vote over nine single-call variants | equals `direct` everywhere |
-| kNN in-context examples ([Liu et al. 2021](https://arxiv.org/abs/2101.06804)), contrastive CoT ([Chia et al. 2023](https://arxiv.org/abs/2311.09277)) | five lexically nearest labelled items (leave-one-out); exemplars shown with a wrong answer beside the right one | same sign as plain few-shot on every task, never better than it |
-| Tree of thoughts / beam search | TypeSafe's [hierarchical-classification cookbook](https://docs.typesafe.ai/cookbooks/hierarchical_classification) already does beam search over `choice` probabilities; not duplicated here | — |
-| Retrieval augmentation | out of scope; it is the one lever left for knowledge questions like MMLU-Pro | — |
+| `SelfRefine(sig, rounds=2)` | self-refine | ask, feed the rendered draft back as `draft_answers`, ask again until the labels stop changing |
+| `Chain(facts_sig, sig, refine=0)` | chain of thought / least-to-most | each step's answers become `established_facts` for the next; intermediate answers travel with the prediction |
+| `Reread(sig)` | Re2 | the text input included twice |
+| `CoVe(sig)` | chain-of-verification | draft → one "is the draft correct?" noul → final with both |
+| `S2A(sig)` | System 2 Attention, typed | one relevance noul per sentence, then the question over the sentences kept |
+| `Permute(sig, n=3)` | self-consistency for a deterministic model | the same choice under `n` option orders, probabilities averaged |
 
-### BIG-Bench Hard: the chain-of-thought benchmark, without chain-of-thought
+Two backends, same client: TypeSafe's API (`JEV_API_KEY`, or `jev-guard key`) and Vercel AI Gateway (`AI_GATEWAY_API_KEY`, or `VERCEL_OIDC_TOKEN` from `vercel env pull`). Responses go through `dspy.cache` (memory + disk), so re-running a benchmark is free.
 
-[BIG-Bench Hard](https://github.com/suzgunmirac/BIG-Bench-Hard) (Suzgun et al. 2022) is the suite where chain-of-thought prompting first showed its large effect: 23 tasks on which few-shot LLMs scored below the average human rater until they were prompted to reason step by step. [`bench/bbh`](bench/bbh/run.mjs) runs every task whose answer is a fixed option set (23 of 27; the four free-text tasks are out), all items, with the official three exemplars from the repo's prompt files ([`bbh.md`](bench/results/bbh.md)):
-
-| task | n | plain Jev | few-shot | few-shot CoT | refine | CoVe | typed chain |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| web_of_lies | 250 | **100%** | 100% | 100% | 100% | 100% | 100% (`lies`, `propagate`) |
-| logical_deduction (3 / 5 / 7 objects) | 750 | **100 / 98.0 / 94.4** | 100 / 98.0 / 93.6 | 100 / 98.4 / 92.8 | 100 / 98.4 / 93.2 | 100 / 98.4 / 93.2 | 100 / 98.0 / 91.2 (`deduction`) |
-| tracking_shuffled_objects (3 / 5 / 7) | 750 | **98.0 / 90.4 / 90.0** | 92.4 / 88.8 / 86.0 | 91.6 / 88.8 / 85.6 | 92.8 / 90.4 / 88.4 | 92.4 / 90.4 / 86.4 | 81.6 / 84.0 / 80.0 (`tracking`) |
-| temporal_sequences | 250 | 99.2% | 99.2% | 99.6% | 99.2% | 99.2% | 99.6% (`temporal`) |
-| boolean_expressions | 250 | 98.8% | 98.8% | 98.8% | 98.8% | 98.8% | |
-| navigate | 250 | 98.0% | 98.8% | 98.4% | 98.4% | 98.4% | |
-| date_understanding | 250 | 92.4% | 89.6% | 90.0% | 92.8% | 92.8% | |
-| disambiguation_qa | 250 | 70.4% | 83.6% | **84.8%** | 80.4% | 82.0% | |
-| causal_judgement | 187 | 66.8% | 63.6% | 63.6% | 67.4% | 66.8% | |
-| salient_translation_error_detection | 250 | 78.8% | 79.2% | 76.8% | 77.6% | 77.6% | |
-| geometric_shapes | 250 | 80.4% | 80.4% | 80.8% | 80.0% | 80.0% | |
-| **mean over all 23 tasks** | 5,571 | **91.8%** | 91.6% | 91.5% | 92.0% | 91.8% | |
-| calls / item | | 1 | 1 | 1 | 2 | 3 | 2–7 |
-
-(The other eleven tasks sit between 88% and 100% for every column; see the full table.)
-
-Two findings, one of them a surprise:
-
-- **Plain Jev already scores 91.8% on BBH with one call and no reasoning.** The tasks that chain-of-thought was invented for, multi-step state tracking, propagating truth values through a chain of liars, ordering constraints, are at or near 100% without any scaffold. Whatever RLCD training did, it internalised the procedure. Every typed chain we built on the problem structure is neutral or *worse*: stepping through the swaps one call at a time drops tracking from 90–98% to 80–84%, because each step's answer becomes a new place to make an error and the model was already solving the whole thing in one read. Whether BBH items were in Jev's training data cannot be ruled out from outside (the files carry the BIG-bench canary string, which is meant to keep them out of corpora); the numbers are reported as measured.
-- **The one task that moves is the one that is about reading the prompt.** disambiguation_qa (which noun a pronoun refers to, or whether it is ambiguous) goes from 70.4% to 84.8% with the three worked exemplars in the instructions, and to 80.4% with a plain self-refine pass. That is a task-definition problem, not a reasoning one: the exemplars show what "ambiguous" means in this dataset. Few-shot examples help Jev where they help an LLM: when the label semantics are not obvious from the question alone.
-
-For reference, the BBH paper reports Codex (`code-davinci-002`) at 56.6% answer-only and 73.9% with few-shot CoT (+16.7) averaged over these tasks; the average human rater is 67.7%, the best 94.4%.
-
-#### Thirteen techniques on all 23 BBH tasks
-
-Every technique on every item (5,571 × 13, plus an offline majority vote over the nine single-call variants). Full table in [`bbh.md`](bench/results/bbh.md).
-
-| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble (3) | permute (3) | few-shot | few-shot CoT | kNN few-shot | contrastive | refine | CoVe | vote |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| **mean, 23 tasks** | 91.8 | 91.8 | 91.7 | 91.6 | 91.6 | 91.8 | 91.8 | 91.6 | 91.5 | 91.3 | 91.5 | **92.0** | 91.8 | 91.8 |
-| disambiguation_qa | 70.4 | 70.8 | 69.6 | 71.2 | 72.0 | 70.4 | 70.0 | 83.6 | **84.8** | 83.2 | 82.4 | 80.4 | 82.0 | 72.4 |
-| tracking_shuffled_objects, 3 objects | 98.0 | 98.8 | 98.0 | 98.8 | 94.0 | 98.4 | 98.0 | 92.4 | 91.6 | 87.2 | 92.4 | 92.8 | 92.4 | 97.6 |
-| tracking_shuffled_objects, 7 objects | 90.0 | 89.6 | 90.0 | 87.6 | 86.0 | 88.4 | 89.2 | 86.0 | 85.6 | 83.6 | 86.0 | 88.4 | 86.4 | 88.4 |
-| date_understanding | 92.4 | 92.8 | 92.4 | 92.0 | **94.0** | 92.8 | 92.4 | 89.6 | 90.0 | 89.6 | 88.8 | 92.8 | 92.8 | 92.8 |
-| causal_judgement | 66.8 | 66.8 | 66.3 | 66.8 | 68.4 | 67.4 | 66.8 | 63.6 | 63.6 | 68.4 | 64.7 | 67.4 | 66.8 | 66.3 |
-| calls / item | 1 | 1 | 1 | 1 | 1 | 3 | 3 | 1 | 1 | 1 | 1 | 2 | 3 | 0 |
-| cost, all 23 tasks | $0.10 | $0.11 | $0.11 | $0.11 | $0.13 | $0.33 | $0.31 | $0.18 | $0.29 | $0.21 | $0.19 | $0.23 | $0.34 | — |
-
-What the sweep says, in order of confidence:
-
-- **Wording tricks do nothing.** A role, an emotional appeal, "let's think step by step": ±0.3 on the mean, and no task moves by more than noise. A model that reads once and answers has nowhere to put the extra words.
-- **Ensembles do nothing.** Averaging three instruction framings or three option orders reproduces `direct` to the decimal on most tasks. Jev is deterministic and its option-order sensitivity is small here, so there is no variance to average away. Majority vote over nine single-call variants equals any one of them.
-- **Exemplars cut both ways.** They fix the one task whose label semantics are not in the question (disambiguation_qa +14, all four exemplar variants agree), and they *hurt* tasks the model already solves by reading: tracking drops from 98 to 87–92 when three worked examples about *other* shuffles are in the instructions, kNN-retrieved examples being the worst. On BBH the net is −0.2 to −0.5 on the mean. Add exemplars when a task's labels need defining, not by default.
-- **A second pass is the only thing above the baseline on the mean**, and by 0.2 points (`refine` 92.0). It earns that on disambiguation_qa (+10) and loses a little on tracking. Chain-of-verification (three calls) is not better than the two-call refine.
-- **Re-reading is a wash**: +1.6 on date_understanding and +1.6 on causal_judgement, −4 on tracking, 91.6 overall.
-
-### LegalBench: rule application on a public benchmark
-
-[LegalBench](https://hazyresearch.stanford.edu/legalbench/) (Guha et al., NeurIPS 2023) has tasks where the answer is a statute applied to facts: *diversity jurisdiction* holds when the parties are completely diverse **and** the amount in controversy exceeds $75,000; *hearsay* is an out-of-court statement **and** offered for its truth; *personal jurisdiction* is domicile **or** (minimum contacts **and** a claim arising from them). The sub-conditions are exactly the intermediate answers a chain needs, and the six diversity variants ship gold labels for both sub-conditions. [`bench/legalbench`](bench/legalbench/run.mjs), all test rows, accuracy with balanced accuracy in parentheses:
-
-| task | n | plain Jev | `refine` | `chain` (sub-conditions → conclusion) | `code` (sub-conditions → rule in code) | GPT-4 · GPT-3.5 · Claude-1 (LegalBench paper, Table 59, correctness) |
-| --- | --- | --- | --- | --- | --- | --- |
-| diversity_1 | 300 | 100% | 100% | 100% | 100% | — |
-| diversity_2 | 300 | 100% | 100% | 100% | 100% | — |
-| diversity_3 | 300 | 93.0% (91.5) | 92.7% | 93.7% (92.3) | 93.0% (92.8) | — |
-| diversity_4 | 300 | 94.0% (93.6) | 95.0% | 94.3% (93.9) | 93.7% (93.2) | — |
-| diversity_5 | 300 | 72.3% (74.5) | 72.0% | **87.3% (86.4)** | **89.7% (88.3)** | 76.6 · 66.7 · 36.7 |
-| diversity_6 | 300 | 79.7% (78.4) | 80.7% | **88.7% (87.9)** | **90.3% (89.7)** | 80.0 · 6.7 · 53.3 |
-| hearsay | 94 | 78.7% (76.7) | 77.7% | **87.2% (87.3)** | **87.2% (87.6)** | 75.5 · 55.3 · 68.1 |
-| personal_jurisdiction | 50 | 86.0% (86.6) | 88.0% | **92.0% (92.4)** | **92.0% (92.4)** | 94.0 · 68.0 · 70.0 |
-| calls / item · cost, all 2,144 rows | | 1 · $0.04 | 2 · $0.08 | 2 · $0.09 | 1 · $0.05 | |
-
-Three things to read off this table:
-
-- **The gain is where the structure is.** diversity_1–4 are one plaintiff, one defendant, few claims: plain Jev is at or near ceiling and nothing moves. diversity_5 and 6 add parties and claims that must not be aggregated, and the chain adds 15 and 9 points; hearsay adds 8.5; personal jurisdiction 6. `refine` alone (the draft fed back, no new questions) adds nothing anywhere, the same as on MMLU-Pro: the second call needs new facts in it, not the old answer.
-- **Once the facts are typed, code can apply the rule.** `code` asks the same sub-condition questions and applies the statute in JavaScript (`diverse && amount_ok`) for one call. It matches or beats the chain, which is TypeSafe's own recommendation ("code for exact computation, Jev for judgment"). The chain is for rules you cannot or do not want to write as code; the sub-condition table shows both read the facts equally well (diversity_5: parties 86%, amount 98%).
-- **Against the LLMs in the LegalBench paper**, Jev with a two-call chain scores above the paper's GPT-4 correctness on diversity_5 (87.3 vs 76.6), diversity_6 (88.7 vs 80.0) and hearsay (87.2 vs 75.5), and below it on personal jurisdiction (92.0 vs 94.0), for about $0.00004 per call. Those are the paper's 2023 measurements (Table 59, "correctness" as judged by the authors, with the paper's prompts), not a fresh run; they are quoted for scale, not as a controlled comparison.
-
-#### Thirteen techniques on the LegalBench rule tasks
-
-| | direct | role | emotion | zs-CoT | re-read | prompt-ens. | permute | few-shot | kNN | contrastive | refine | CoVe | **chain** | **code** | vote |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| diversity_3 | 93.0 | 91.3 | 92.0 | 91.0 | 90.0 | 91.7 | 91.7 | 90.7 | 89.7 | 90.0 | 92.7 | 92.3 | **93.7** | 93.0 | 90.7 |
-| diversity_4 | 94.0 | 97.0 | 96.7 | 97.3 | **100** | 95.3 | 94.0 | 97.3 | 97.0 | 98.7 | 95.0 | 94.7 | 94.3 | 93.7 | 97.3 |
-| diversity_5 | 72.3 | 73.0 | 69.3 | 76.7 | 58.3 | 75.0 | 72.0 | 89.0 | 86.3 | 88.7 | 72.0 | 70.7 | 87.3 | **89.7** | 78.0 |
-| diversity_6 | 79.7 | 76.7 | 80.3 | 81.3 | 83.3 | 79.7 | 79.0 | 74.3 | 74.0 | 72.3 | 80.7 | 79.0 | 88.7 | **90.3** | 77.3 |
-| hearsay | 78.7 | 80.9 | 81.9 | 81.9 | 78.7 | 81.9 | 79.8 | 81.9 | 83.0 | 80.9 | 77.7 | 77.7 | **87.2** | **87.2** | 81.9 |
-| personal_jurisdiction | 86.0 | 86.0 | 86.0 | 88.0 | 92.0 | 84.0 | 86.0 | 92.0 | 88.0 | 90.0 | 88.0 | 90.0 | **92.0** | **92.0** | 88.0 |
-| calls / row | 1 | 1 | 1 | 1 | 1 | 3 | 2 | 1 | 1 | 1 | 2 | 3 | 2 | 1 | 0 |
-
-(diversity_1 and 2 are 100% for every column. Exemplars here are five other labelled rows of the same task, leave-one-out; kNN picks the five lexically closest.)
-
-The rule tasks separate the techniques more sharply than BBH does:
-
-- **Decomposition is the only technique that wins everywhere.** `chain` and `code` are best or tied on every task, and they are the only columns that never fall below `direct`.
-- **Exemplars are a coin flip.** Five labelled examples lift diversity_5 by 17 points (89.0, as good as the chain) and *cut* diversity_6 by 5 to 7 points; on hearsay they add 3, on personal jurisdiction 6. Same technique, same dataset family, opposite sign. The chain gets the diversity_5 gain without the diversity_6 loss because it asks for the two facts the statute names rather than showing the model other cases.
-- **Re-reading is high-variance**: 100% on diversity_4 (+6) and 58.3% on diversity_5 (−14). Duplicating the state is not free for a model that reads once.
-- **Wording, ensembles, self-refine, CoVe, majority vote**: within noise of `direct` on every task, the same verdict as BBH and MMLU-Pro.
-
+<!-- BENCH -->
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/leepokai/llm-prompt-techniques-on-jev && cd llm-prompt-techniques-on-jev
-npm test                                                   # unit tests, no key needed
-
-# data (Python, once): MMLU-Pro from Hugging Face, CLERC slice rebuilt exactly as TypeSafe's cookbook does
-python -m venv .venv && .venv/bin/pip install datasets bm25s
-.venv/bin/python bench/mmlu-pro/prepare.py bench/data/mmlu_pro.json
-.venv/bin/python bench/clerc/prepare.py    bench/data/clerc.json     # prints BM25 top-1/5/10 = 5% / 15% / 38%, matching the cookbook
-
-# benches: every Jev response is cached in bench/results/*.json, so re-running is free and partial runs resume
-export JEV_API_KEY=…
-node bench/synthetic/run.mjs                 # 100 memos × 5 strategies        ≈ 1,300 calls, $0.04
-N=40  node bench/clerc/run.mjs all           # the cookbook's 40 queries        ≈ 4,000 calls, $0.5
-N=150 node bench/clerc/run.mjs all           # + the other 110 pooled rows      ≈ 15,000 calls, $2
-N=700 node bench/mmlu-pro/run.mjs all        # stratified sample, 7 strategies  ≈ 8,400 calls, $0.3
-N=all node bench/mmlu-pro/run.mjs direct     # full test set, 12,032 questions  ≈ $0.3, 9 min at 6 concurrent
+python -m venv .venv && .venv/bin/pip install -e ".[bench,test]"
+.venv/bin/pytest -q                                   # no key needed
+export VERCEL_OIDC_TOKEN=…                            # or JEV_API_KEY
+.venv/bin/python benchmarks/synthetic.py              # 100 memos × 4 strategies                     ≈ $0.04
+.venv/bin/python benchmarks/legalbench.py             # 8 tasks × 15 techniques on the test splits    ≈ $0.8
+.venv/bin/python benchmarks/bbh.py                    # 23 tasks × 14 techniques, 100 test items each ≈ $1.5
+.venv/bin/python benchmarks/mmlu_pro.py               # 500 test questions × 13 techniques            ≈ $0.4
+.venv/bin/python benchmarks/clerc.py                  # cookbook slice, 3 formulations                ≈ $0.3
+.venv/bin/python benchmarks/optimize.py               # GEPA + MIPROv2 on five tasks (reflection LM via the gateway)
 ```
 
-Each run prints a Markdown table and writes it next to the cache (`bench/results/*.md`). Rate limit is 1,200 requests per minute; the client retries 429/5xx with backoff and honours `retry-after`.
-
-## Design notes
-
-- **Why a second call at all.** Jev packs the state once and scores each question in its own branch; branches do not see each other ([architecture write-up](https://archerhume.com/posts/jevs-architecture-unmasked/), confirmed by TypeSafe's parallel-questions cookbook). Any judgment that is a function of another judgment therefore needs the first answer to be *in the state*. That is the whole trick, and it is why the gain is large on rubrics and zero on atomic questions.
-- **Fixed point, not diffusion.** `refine` converges in one round in every benchmark here. It stops as soon as the labels repeat; `rounds` is a cap, not a schedule.
-- **The draft is evidence.** Presenting the draft as fallible ("may contain errors: re-check") matters, and even so Jev copies a wrong draft field about a third of the time. Feed back only its own answers to the same document.
-- **Cost.** Jev charges input tokens only ($0.042 / M). A feedback pass costs the state again plus a few lines. The expensive design is the cookbook's one-call-per-pair re-ranking; `rerank` sends the query once and the candidates inside isolated questions, which is the same computation for 3% of the calls.
-- **Nothing here needs the SDK.** One `fetch` to `POST /v1/systemone`, key from `JEV_API_KEY`, `TYPESAFE_API_KEY` or [`jev-guard key`](https://github.com/leepokai/jev-guard).
+Datasets download to `data/` on first use (Hugging Face for LegalBench, MMLU-Pro and CLERC; the BBH repo for tasks and prompt files). Each script writes a Markdown table and a JSON of per-technique scores to `results/`. The first pass of this work was a hand-written Node harness; its measurements are kept under [`results/first-pass-js/`](results/first-pass-js) for reference.
 
 ## Related
 
 - [jev-guard](https://github.com/leepokai/jev-guard) — the same author's prompt-injection and dangerous-action guard for coding agents, built on Jev.
-- [TypeSafe docs](https://docs.typesafe.ai) · [cookbooks](https://docs.typesafe.ai/cookbooks/rerank_typesafe) · [Jev's architecture unmasked](https://archerhume.com/posts/jevs-architecture-unmasked/) · [openjev](https://github.com/TheoLeeCJ/openjev)
+- [TypeSafe docs](https://docs.typesafe.ai) · [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe) · [DSPy](https://dspy.ai) · [GEPA](https://arxiv.org/abs/2507.19457) · [Jev's architecture unmasked](https://archerhume.com/posts/jevs-architecture-unmasked/)
 
 MIT © [leepokai](https://github.com/leepokai)
-

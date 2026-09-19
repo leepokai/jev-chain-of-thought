@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -64,6 +65,8 @@ class JevLM(dspy.BaseLM):
         self.max_retries = max_retries
         self.session = session or requests.Session()
         self._backend: dict | None = None
+        self.calls = self.cache_hits = self.input_tokens = 0  # counters, cache hits included (what a cold run would cost)
+        self._lock = threading.Lock()
 
     # --- transport -------------------------------------------------------------------------------------------------
     def _resolve(self) -> dict:
@@ -130,4 +133,8 @@ class JevLM(dspy.BaseLM):
             hit = False
         else:
             hit = True
+        with self._lock:
+            self.calls += 1
+            self.cache_hits += hit
+            self.input_tokens += cached["usage"]["prompt_tokens"]
         return dspy.LMResponse.from_text(json.dumps(cached["answers"]), model=cached["model"], usage=cached["usage"], cache_hit=hit)
