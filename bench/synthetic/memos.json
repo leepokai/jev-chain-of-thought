@@ -1,0 +1,802 @@
+[
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4213\nDate: 2026-09-11\nOrigin: Iran\nAmount: USD 80,174\nCounterparty: Kestrel Trading\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7697\nDate: 2026-12-06\nOrigin: Iran\nAmount: USD 43,654\nCounterparty: Kestrel Trading\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8361\nDate: 2026-05-18\nOrigin: Belize\nAmount: USD 56,902\nCounterparty: Acme Ltd\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3039\nDate: 2026-03-28\nOrigin: Canada\nAmount: USD 278,549\nCounterparty: Acme Ltd\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7091\nDate: 2026-11-18\nOrigin: Singapore\nAmount: USD 138,684\nCounterparty: Blue Harbor LLC\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2678\nDate: 2026-05-06\nOrigin: Belize\nAmount: USD 294,854\nCounterparty: Blue Harbor LLC\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8084\nDate: 2026-10-11\nOrigin: Belize\nAmount: USD 384,236\nCounterparty: Acme Ltd\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1647\nDate: 2026-06-09\nOrigin: Japan\nAmount: USD 25,898\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1773\nDate: 2026-01-08\nOrigin:Singapore\nAmount: USD 3,242\nCounterparty: Orion Foods\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1491\nDate: 2026-05-16\nOrigin: Japan\nAmount: USD 40,787\nCounterparty: Acme Ltd\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8775\nDate: 2026-02-03\nOrigin: France\nAmount: USD 8,954\nCounterparty: Northwind Holdings\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6000\nDate: 2026-06-28\nOrigin: France\nAmount: USD 225,999\nCounterparty: Northwind Holdings\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2574\nDate: 2026-07-2l\nOrigin: Singapore\nAmount: USD 109,088\nCounterparty: Kestrel Trading\nNotes:payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEWMEMO #7625\nDate: 2026-09-21\nOrigin: France\nAmount: USD 1,258\nCounterparty: Orion Foods\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8279\nDate: 2026-01-18\nOrigin: Canada\nAmount: USD 13,279\nCounterparty: Acme Ltd\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6379\nDate: 2026-12-18\nOrigin: Canada\nAmount: USD l9,723\nCounterparty: Northwind Holdings\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7297\nDate: 2026-08-05\nOrigin: Singapore\nAmount: USD 26,979\nCounterparty: Kestrel Trading\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3229\nDate: 2026-12-06\nOrigin: Japan\nAmount: USD 13,793\nCounterparty: B1ue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2317\nDate: 2026-07-28\nOrigin: Belize\nAmount: USD 2,309\nCounterparty: Blue Harbor LLC\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1020\nDate: 2026-09-16\nOrigin: Canada\nAmount: USD 11,320\nCounterparty: Acme Ltd\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6095\nDate: 2O26-08-25\nOrigin: Iran\nAmount: USD 13,232\nCounterparty: Northwind Holdings\nNotes: routine invoice settlement.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4132\nDate: 2026-04-11\nOrigin: Panama\nAmount: USD 6,495\nCounterparty: 0rionFoods\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8340\nDate: 2026-l2-26\nOrigin: France\nAmount: USD 12,541\nCounterparty: Blue Harbor LLC\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTIONREVIEW MEMO #3332\nDate: 2026-05-12\nOrigin: Taiwan\nAmount: USD 306,797\nCounterparty: Blue Harbor LLC\nNotes: wireflagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9564\nDate: 2026-11-01\nOrigin: Cayman Islands\nAmount: USD 27,941\nCounterparty: Kestre1 Trading\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #3619\nDate: 2026-09-15\nOrigin: Singapore\nAmount: USD 2,499\nCounterparty: Blue Harbor LLC\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1946\nDate: 2026-05-26\nOrigin: Japan\nAmount:USD 320,426\nCounterparty: Blue Harbor LLC\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6342\nDate: 2026-08-09\nOrigin: Belize\nAmount: USD 11,762\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7019\nDate: 2026-10-01\nOrigin: Iran\nAmount: USD 5,022\nCounterparty: Blue Harbor LLC\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8802\nDate: 2026-03-07\nOrigin: Iran\nAmount: USD 8,123\nCounterparty: Blue Harbor LLC\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9504\nDate: 2026-02-13\nOrigin: Canada\nAmount: USD 46,633\nCounterparty: Acme Ltd\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #4365\nDate: 2026-10-09\nOrigin: Singapore\nAmount: USD 7,428\nCounterparty: Kestrel Trading\nNotes: routine invoice settlement.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8231\nDate: 2026-10-06\nOrigin: Singapore\nAmount: USD 3,547\nCounterparty: Orion Foods\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #5685\nDate: 2026-08-21\nOrigin: Iran\nAmount: USD 10,789\nCounterparty: Kestrel Trading\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO#6278\nDate: 2026-01-17\nOrigin: France\nAmount: USD 213,913\nCounterparty: Acme Ltd\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2000\nDate: 2026-07-08\nOrigin: Singapore\nAmount: USD 8,921\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9010\nDate: 2026-01-06\nOrigin: Japan\nAmount: USD 211,441\nCounterparty: Kestrel Trading\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4103\nDate: 2026-10-20\nOrigin: Iran\nAmount: USD 375,030\nCounterparty: Orion Foods\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRAN5ACTION REVIEW MEMO #3181\nDate: 2026-11-07\nOrigin: Panama\nAmount: USD 4,026\nCounterparty: Kestrel Trading\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3649\nDate: 2026-O1-12\nOrigin: Panama\nAmount: USD 796\nCounterparty: Kestrel Trading\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9994\nDate: 2026-10-20\nOrigin: Cayman Islands\nAmount: USD 8,511\nCounterparty: Orion Foods\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7701\nDate: 2026-05-16\nOrigin: Singapore\nAmount: USD 331,202\nCounterparty: Acme Ltd\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2553\nDate: 2026-01-17\nOrigin: Taiwan\nAmount: USD 21,802\nCounterparty: Acme Ltd\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8371\nDate: 2026-05-13\nOrigin: Taiwan\nAmount: USD 6,160\nCounterparty: Blue Harbor LLC\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7463\nDate: 2026-07-19\nOrigin: Canada\nAmount: USD 6,666\nCounterparty: Acme Ltd\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #5121\nDate: 2026-08-09\nOrigin: Cayman Islands\nAmount: USD 303,723\nCounterparty: Northwind Holdings\nNotes: routine invoice settlement.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEWMEMO #5305\nDate: 2026-08-25\nOrigin: Panama\nAmount: USD 273,055\nCounterparty: Blue Harbor LLC\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1369\nDate: 2026-06-l2\nOrigin: Iran\nAmount: USD 189,470\nCounterparty: Blue Harbor LLC\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #5441\nDate: 2026-04-01\nOrigin: Cayman Is1ands\nAmount:USD 42,462\nCounterparty: Northwind Holdings\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9786\nDate: 2026-08-05\nOrigin: CaymanIslands\nAmount: USD 4,021\nCounterparty: Orion Foods\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6962\nDate: 2O26-01-14\nOrigin: Belize\nAmount: USD 1,076\nCounterparty: Orion Foods\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6355\nDate: 2026-11-28\nOrigin: Iran\nAmount: USD 1,666\nCounterparty: Northwind Holdings\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #8700\nDate: 2026-12-25\nOrigin: Iran\nAmount: USD 34,013\nCounterparty: Northwind Holdings\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4482\nDate: 2026-10-02\nOrigin: Taiwan\nAmount: USD 46,336\nCounterparty: Northwind Holdings\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTI0N REVIEW MEMO #6281\nDate: 2026-10-21\nOrigin: Panama\nAmount: USD 37,182\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4450\nDate: 2026-03-17\nOrigin: Germany\nAmount: USD 2,753\nCounterparty: Acme Ltd\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #9290\nDate: 2026-10-09\nOrigin: Cayman Islands\nAmount: USD 22,774\nCounterparty: Acme Ltd\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2202\nDate: 2026-06-O3\nOrigin: Iran\nAmount: USD 2,909\nCounterparty: Kestrel Trading\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2884\nDate: 2026-06-05\nOrigin: Belize\nAmount: USD 346,559\nCounterparty: Blue Harbor LLC\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #5347\nDate: 2026-01-26\nOrigin: Iran\nAmount: USD 14,555\nCounterparty: Acme Ltd\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9006\nDate: 2026-08-24\nOrigin: Singapore\nAmount: USD 349,244\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1922\nDate: 2026-08-15\nOrigin: France\nAmount: USD 194,350\nCounterparty: Orion Foods\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3374\nDate: 2026-01-13\nOrigin: Taiwan\nAmount: USD 34,450\nCounterparty: Acme Ltd\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6072\nDate: 2026-06-12\nOrigin: Singapore\nAmount: USD 5,607\nCounterparty: Orion Foods\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTI0N REVIEW MEMO #4831\nDate: 2026-07-03\nOrigin: Panama\nAmount: USD 4,205\nCounterparty: Orion Foods\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3345\nDate: 2026-O7-17\nOrigin: Panama\nAmount: USD l9,937\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4697\nDate: 2026-04-09\nOrigin: Belize\nAmount: USD 35,790\nCounterparty: Kestrel Trading\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6431\nDate: 2026-12-17\nOrigin: Iran\nAmount: USD 288,301\nCounterparty:Acme Ltd\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #5007\nDate: 2026-04-18\nOrigin: Belize\nAmount: USD 34,867\nCounterparty: Acme Ltd\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7639\nDate: 2026-09-12\nOrigin: Panama\nAmount: USD 371,471\nCounterparty: Kestrel Trading\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2283\nDate: 2026-03-23\nOrigin: Canada\nAmount: USD 7,483\nCounterparty: Blue Harbor LLC\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRAN5ACTION REVIEW MEMO #2986\nDate: 2026-06-01\nOrigin: France\nAmount: USD 5,169\nCounterparty: Blue Harbor LLC\nNotes: structuring / laundering indicators.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTI0N REVIEW MEMO #9596\nDate: 2026-03-28\nOrigin: Canada\nAmount: USD 8,745\nCounterparty: Kestrel Trading\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4144\nDate: 2026-03-14\nOrigin: Canada\nAmount: USD 330,017\nCounterparty: Northwind Holdings\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7971\nDate: 2026-04-28\nOrigin: Belize\nAmount: USD 4,508\nCounterparty: 0rion Foods\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4858\nDate: 2026-09-03\nOrigin: Belize\nAmount: USD 289,697\nCounterparty: Northwind Holdings\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6839\nDate: 2026-0l-23\nOrigin: France\nAmount: USD 583\nCounterparty: Blue Harbor LLC\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7892\nDate: 2026-06-25\nOrigin: France\nAmount: USD 5,233\nCounterparty: Kestrel Trading\nNotes: internal transfer between own accounts.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3313\nDate: 2O26-02-23\nOrigin: Iran\nAmount: USD 4,8l2\nCounterparty: Kestrel Trading\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTI0N REVIEWMEMO #4038\nDate: 2026-06-18\nOrigin: Cayman Is1ands\nAmount: USD 91,160\nCounterparty: Kestrel Trading\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRAN5ACTION REVIEW MEMO #7944\nDate:2026-08-26\nOrigin: Japan\nAmount: USD 365\nCounterparty: Northwind Holdings\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8225\nDate: 2026-05-06\nOrigin: Belize\nAmount: USD 6,708\nCounterparty: Blue Harbor LLC\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1122\nDate: 2026-03-17\nOrigin: Canada\nAmount: USD 4,308\nCounterparty: Blue Harbor LLC\nNotes: chargeback requested by cardholder.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3235\nDate: 2026-12-l1\nOrigin: Singapore\nAmount: USD 4,464\nCounterparty: Kestrel Trading\nNotes: customer disputes thecharge.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "true",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #1403\nDate: 2026-05-04\nOrigin: Iran\nAmount: USD 6,052\nCounterparty: Northwind Holdings\nNotes: chargeback requestedby cardholder.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #7907\nDate: 2026-05-02\nOrigin: Germany\nAmount: USD 199,064\nCounterparty: Northwind Holdings\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #6250\nDate: 2026-03-17\nOrigin: Germany\nAmount: USD 134,123\nCounterparty: Kestrel Trading\nNotes:customer disputes the charge.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTIONREVIEW MEMO #4343\nDate: 2026-O3-O4\nOrigin: France\nAmount: USD 24,826\nCounterparty: Blue Harbor LLC\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3402\nDate: 2026-05-08\nOrigin: France\nAmount: USD128,O87\nCounterparty: Blue Harbor LLC\nNotes: possible fraud pattern detected.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #l152\nDate: 2026-08-27\nOrigin: Singapore\nAmount: USD 34,l57\nCounterparty: Acme Ltd\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #4534\nDate: 2026-10-19\nOrigin: Canada\nAmount: USD 1,689\nCounterparty: Acme Ltd\nNotes: first-time counterparty.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2623\nDate: 2026-07-01\nOrigin: Taiwan\nAmount: USD 4,186\nCounterparty: Northwind Holdings\nNotes: possib1e fraud pattern detected.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEM0 #9128\nDate: 2026-10-16\nOrigin: Panama\nAmount: USD 11,831\nCounterparty: Orion Foods\nNotes: routine invoice settlement.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #8456\nDate: 2026-10-22\nOrigin: Taiwan\nAmount: USD 229,481\nCounterparty: Blue Harbor LLC\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #9169\nDate: 2026-08-10\nOrigin: Iran\nAmount: USD 61,707\nCounterparty: Blue Harbor LLC\nNotes: wire flagged by sanctions screening.",
+  "gold": {
+   "risk_level": "HIGH",
+   "requires_review": "true",
+   "action_tier": "TIER_1"
+  }
+ },
+ {
+  "doc": "TRAN5ACTIONREVIEW MEMO #3167\nDate: 2026-08-22\nOrigin: Cayman Islands\nAmount: USD 46,142\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "MEDIUM",
+   "requires_review": "true",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #5773\nDate: 2026-03-28\nOrigin:Canada\nAmount: USD 46,366\nCounterparty: Orion Foods\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_2"
+  }
+ },
+ {
+  "doc": "TRANSACTIONREVIEW MEMO #8035\nDate: 2026-06-12\nOrigin: Singapore\nAmount: USD 6,253\nCounterparty: Northwind Holdings\nNotes: customer disputes the charge.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "true",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #3805\nDate: 2026-05-12\nOrigin: Taiwan\nAmount: USD 5,167\nCounterparty: Blue Harbor LLC\nNotes: payroll batch, verified by finance.",
+  "gold": {
+   "risk_level": "NONE",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ },
+ {
+  "doc": "TRANSACTION REVIEW MEMO #2741\nDate: 2026-11-11\nOrigin: Panama\nAmount: USD 2,382\nCounterparty: Blue Harbor LLC\nNotes: recurring vendor payment, verified.",
+  "gold": {
+   "risk_level": "LOW",
+   "requires_review": "false",
+   "action_tier": "TIER_3"
+  }
+ }
+]

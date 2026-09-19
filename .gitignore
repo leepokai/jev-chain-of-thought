@@ -1,0 +1,5 @@
+node_modules/
+bench/data/
+bench/.venv/
+.env*
+*.log
