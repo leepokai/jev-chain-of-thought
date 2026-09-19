@@ -127,6 +127,27 @@ requires_review: true (p=0.91)
 
 The wording matters: a draft presented as fact is copied, a draft presented as fallible is checked (see the anchor control below).
 
+## Borrowing LLM prompting techniques
+
+Every prompting trick that works on an LLM is a way of putting more useful text in front of the model before it commits. Jev cannot write that text itself, so the package (or your code) has to. What carries over, what it becomes here, and what it measured:
+
+| LLM technique | What it becomes for Jev | Measured here |
+| --- | --- | --- |
+| Chain-of-thought ([Wei et al. 2022](https://arxiv.org/abs/2201.11903)) | `chain`: the intermediate steps are typed questions you author once per task; their answers become facts in the state | dependent rubric +13 pts (`chain`), +19 with `refine`; BBH typed chains below |
+| Least-to-most ([Zhou et al. 2022](https://arxiv.org/abs/2205.10625)) | progressive state: feed the problem one step at a time, carrying the previous step's answers (BBH tracking: one call per swap) | BBH `tracking` column |
+| Self-refine ([Madaan et al. 2023](https://arxiv.org/abs/2303.17651)) | `refine`: the draft goes back in as fallible evidence until the labels stop changing | rubric +14 pts; MMLU-Pro 0; BBH `refine` column |
+| Self-consistency ([Wang et al. 2022](https://arxiv.org/abs/2203.11171)) | `choose({ strategy: "permute" })`: the same question under shuffled option orders, probabilities averaged (Jev is deterministic, so order is the only sampling axis) | MMLU-Pro −0.2 pts |
+| Chain-of-verification ([Dhuliawala et al. 2023](https://arxiv.org/abs/2309.11495)) | draft → one `noul` "is the draft correct?" → final with both in the state | BBH `cove` column |
+| Few-shot / few-shot CoT ([Brown et al. 2020](https://arxiv.org/abs/2005.14165)) | the official BBH exemplars as structured `instructions`: question → answer, or question → worked solution | BBH `fewshot`, `fewshot-cot` columns |
+| Program-aided reasoning ([Gao et al. 2022](https://arxiv.org/abs/2211.10435)) | Jev finds the facts, code applies the rule (`code` strategy: `diverse && amount > 75k`) | LegalBench `code` column |
+| Forward chaining (fixed-point iteration) | ask every fact at once and `refine`: a truth value propagates one hop per round (BBH web-of-lies) | BBH `propagate` column |
+| Tree of thoughts / beam search | TypeSafe's [hierarchical-classification cookbook](https://docs.typesafe.ai/cookbooks/hierarchical_classification) already does beam search over `choice` probabilities; not duplicated here | — |
+| Retrieval augmentation | out of scope; it is the one lever left for knowledge questions like MMLU-Pro | — |
+
+<!-- BBH -->
+
+<!-- LEGALBENCH -->
+
 ## Reproduce
 
 ```bash
