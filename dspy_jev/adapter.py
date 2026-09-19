@@ -93,6 +93,20 @@ def render(answers: dict[str, dict]) -> str:
 
 
 class JevAdapter(Adapter):
+    """Jev questions for a `JevLM`; any other LM (an optimizer's proposal model, a text step in a mixed program) gets `dspy.ChatAdapter`."""
+
+    def __call__(self, lm, lm_kwargs, signature, demos, inputs):
+        from .lm import JevLM
+        if not isinstance(lm, JevLM):
+            return dspy.ChatAdapter()(lm, lm_kwargs, signature, demos, inputs)
+        return super().__call__(lm, lm_kwargs, signature, demos, inputs)
+
+    async def acall(self, lm, lm_kwargs, signature, demos, inputs):
+        from .lm import JevLM
+        if not isinstance(lm, JevLM):
+            return await dspy.ChatAdapter().acall(lm, lm_kwargs, signature, demos, inputs)
+        return await super().acall(lm, lm_kwargs, signature, demos, inputs)
+
     def format(self, signature: type[Signature], demos: list[dict[str, Any]], inputs: dict[str, Any]) -> list[dict[str, Any]]:
         opt_fields = {f"{o}_options": o for o in signature.output_fields if f"{o}_options" in signature.input_fields}
         in_names = [k for k in signature.input_fields if k not in opt_fields]

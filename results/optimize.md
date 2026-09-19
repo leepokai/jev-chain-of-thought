@@ -1,12 +1,12 @@
 # Automatic prompt optimization (reflection LM openai/anthropic/claude-sonnet-4.5; task LM jev-latest via gateway)
 
-| task | train / val / test | direct | GEPA |
-| --- | --- | --- | --- |
-| legalbench:diversity_5 | 100 / 50 / 150 | 81.3 | 100.0 |
-| legalbench:diversity_6 | 100 / 50 / 150 | 82.0 | 96.0 |
-| legalbench:hearsay | 30 / 14 / 50 | 68.0 | 68.0 |
-| bbh:causal_judgement | 35 / 15 / 100 | 67.0 | 74.0 |
-| bbh:disambiguation_qa | 35 / 15 / 100 | 80.0 | 84.0 |
+| task | train / val / test | direct | GEPA | MIPROv2 |
+| --- | --- | --- | --- | --- |
+| legalbench:diversity_5 | 100 / 50 / 150 | 81.3 | 100.0 | failed: TypeError |
+| legalbench:diversity_6 | 100 / 50 / 150 | 82.0 | 96.0 | failed: TypeError |
+| legalbench:hearsay | 30 / 14 / 50 | 68.0 | 68.0 | failed: TypeError |
+| bbh:causal_judgement | 35 / 15 / 100 | 67.0 | 74.0 | failed: TypeError |
+| bbh:disambiguation_qa | 35 / 15 / 100 | 80.0 | 84.0 | failed: TypeError |
 
 <details><summary>legalbench:diversity_5/GEPA: optimized instructions (100.0%)</summary>
 

@@ -53,7 +53,7 @@ def main(specs, only=None):
                 row[k.split("/")[1]] = f"{v['acc']:.1f}"
         for name, make in (("GEPA", lambda: dspy.GEPA(metric=feedback_metric("answer"), auto="light", reflection_lm=rlm, num_threads=16, track_stats=False)),
                            ("MIPROv2", lambda: dspy.MIPROv2(metric=exact("answer"), prompt_model=rlm, task_model=lm, auto="light", num_threads=16, max_bootstrapped_demos=2, max_labeled_demos=4, verbose=False))):
-            if only and name.lower() != only:
+            if only and not name.lower().startswith(only.lower()):
                 continue
             m = Meter(lm)
             try:
