@@ -143,7 +143,13 @@ One call per query matches or beats the cookbook's thirty (the first pass measur
 
 [`benchmarks/optimize.py`](benchmarks/optimize.py) runs `dspy.GEPA` (reflective prompt evolution, Agrawal et al. 2025) and `dspy.MIPROv2` on a one-call Jev program with Claude Sonnet 4.5 (through Vercel AI Gateway) as the reflection / proposal model and Jev as the task model. GEPA's `auto="light"` budget spent about 730 Jev calls per LegalBench task.
 
-<!-- OPTIMIZE-TABLE -->
+| task | train / val / test | direct | **GEPA** | MIPROv2 |
+| --- | --- | --- | --- | --- |
+| LegalBench diversity_5 | 100 / 50 / 150 | 81.3 | **100.0** | <!-- MIPRO:legalbench:diversity_5 --> |
+| LegalBench diversity_6 | 100 / 50 / 150 | 82.0 | **96.0** | <!-- MIPRO:legalbench:diversity_6 --> |
+| LegalBench hearsay | 30 / 14 / 50 | 68.0 | 68.0 | <!-- MIPRO:legalbench:hearsay --> |
+| BBH causal_judgement | 35 / 15 / 100 | 67.0 | **74.0** | <!-- MIPRO:bbh:causal_judgement --> |
+| BBH disambiguation_qa | 35 / 15 / 100 | 80.0 | **84.0** | <!-- MIPRO:bbh:disambiguation_qa --> |
 
 The optimized instructions are saved under [`results/optimized/`](results/optimized). On diversity_5 GEPA turned the one-sentence statute into a procedure (enumerate plaintiff–defendant pairs, check citizenship overlap, sum each plaintiff's claims against each defendant, compare to $75,000) and the test score went from 81.3 to 100.0.
 
