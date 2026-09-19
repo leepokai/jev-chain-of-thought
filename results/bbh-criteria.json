@@ -1,0 +1,278 @@
+{
+ "boolean_expressions": {
+  "direct": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014112000000000003
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.03,
+   "cost": 0.0030031680000000005
+  }
+ },
+ "causal_judgement": {
+  "direct": {
+   "acc": 69.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0022789200000000003
+  },
+  "refine": {
+   "acc": 69.0,
+   "calls_per_item": 2.0,
+   "cost": 0.00469224
+  }
+ },
+ "date_understanding": {
+  "direct": {
+   "acc": 92.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0019256160000000002
+  },
+  "refine": {
+   "acc": 92.0,
+   "calls_per_item": 2.0,
+   "cost": 0.00409941
+  }
+ },
+ "disambiguation_qa": {
+  "direct": {
+   "acc": 69.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0016710540000000002
+  },
+  "refine": {
+   "acc": 79.0,
+   "calls_per_item": 2.38,
+   "cost": 0.004202562000000001
+  }
+ },
+ "formal_fallacies": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0012691560000000002
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0026311740000000004
+  }
+ },
+ "geometric_shapes": {
+  "direct": {
+   "acc": 80.0,
+   "calls_per_item": 1.0,
+   "cost": 0.002203908
+  },
+  "refine": {
+   "acc": 80.0,
+   "calls_per_item": 2.02,
+   "cost": 0.004836342
+  }
+ },
+ "hyperbaton": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014590380000000002
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0030524760000000006
+  }
+ },
+ "logical_deduction_three_objects": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0017905020000000002
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0037448040000000004
+  }
+ },
+ "logical_deduction_five_objects": {
+  "direct": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0020663160000000003
+  },
+  "refine": {
+   "acc": 98.0,
+   "calls_per_item": 2.01,
+   "cost": 0.004378332
+  }
+ },
+ "logical_deduction_seven_objects": {
+  "direct": {
+   "acc": 92.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023065560000000004
+  },
+  "refine": {
+   "acc": 92.0,
+   "calls_per_item": 2.0,
+   "cost": 0.004894512000000001
+  }
+ },
+ "movie_recommendation": {
+  "direct": {
+   "acc": 88.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0016474080000000002
+  },
+  "refine": {
+   "acc": 88.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0034912500000000004
+  }
+ },
+ "navigate": {
+  "direct": {
+   "acc": 99.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015937320000000003
+  },
+  "refine": {
+   "acc": 99.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0033218640000000003
+  }
+ },
+ "penguins_in_a_table": {
+  "direct": {
+   "acc": 94.79,
+   "calls_per_item": 1.0,
+   "cost": 0.002116338
+  },
+  "refine": {
+   "acc": 96.88,
+   "calls_per_item": 2.0208333333333335,
+   "cost": 0.004501728000000001
+  }
+ },
+ "reasoning_about_colored_objects": {
+  "direct": {
+   "acc": 98.0,
+   "calls_per_item": 1.0,
+   "cost": 0.002219154
+  },
+  "refine": {
+   "acc": 98.0,
+   "calls_per_item": 2.0,
+   "cost": 0.004917864000000001
+  }
+ },
+ "ruin_names": {
+  "direct": {
+   "acc": 94.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0016477440000000002
+  },
+  "refine": {
+   "acc": 94.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0034883940000000006
+  }
+ },
+ "salient_translation_error_detection": {
+  "direct": {
+   "acc": 83.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0025668720000000004
+  },
+  "refine": {
+   "acc": 81.0,
+   "calls_per_item": 2.04,
+   "cost": 0.0054972120000000005
+  }
+ },
+ "snarks": {
+  "direct": {
+   "acc": 88.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0018397680000000003
+  },
+  "refine": {
+   "acc": 88.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0038136420000000003
+  }
+ },
+ "sports_understanding": {
+  "direct": {
+   "acc": 89.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014760900000000002
+  },
+  "refine": {
+   "acc": 90.0,
+   "calls_per_item": 2.01,
+   "cost": 0.0031025400000000004
+  }
+ },
+ "temporal_sequences": {
+  "direct": {
+   "acc": 99.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0021039900000000005
+  },
+  "refine": {
+   "acc": 99.0,
+   "calls_per_item": 2.0,
+   "cost": 0.00440118
+  }
+ },
+ "tracking_shuffled_objects_three_objects": {
+  "direct": {
+   "acc": 96.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0019065900000000003
+  },
+  "refine": {
+   "acc": 94.0,
+   "calls_per_item": 2.03,
+   "cost": 0.0040390140000000005
+  }
+ },
+ "tracking_shuffled_objects_five_objects": {
+  "direct": {
+   "acc": 88.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0021548100000000005
+  },
+  "refine": {
+   "acc": 87.0,
+   "calls_per_item": 2.04,
+   "cost": 0.004627812
+  }
+ },
+ "tracking_shuffled_objects_seven_objects": {
+  "direct": {
+   "acc": 86.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0024411240000000002
+  },
+  "refine": {
+   "acc": 88.0,
+   "calls_per_item": 2.06,
+   "cost": 0.005329002000000001
+  }
+ },
+ "web_of_lies": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015726480000000003
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0032796960000000003
+  }
+ }
+}

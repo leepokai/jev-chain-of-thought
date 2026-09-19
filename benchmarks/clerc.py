@@ -43,6 +43,16 @@ def listwise_sig(ids: list[str], with_facts: bool):
 
 
 def rerank(strategy, query, cands, top_k=10):
+    """Ranking of candidate ids, best first. One retry; on a second failure the BM25 order is kept (counted, not silently dropped)."""
+    for attempt in range(2):
+        try:
+            return _rerank(strategy, query, cands, top_k)
+        except Exception as e:  # noqa: BLE001
+            log(f"rerank {strategy} failed ({type(e).__name__}: {str(e)[:80]}), {'retrying' if attempt == 0 else 'keeping BM25 order'}")
+    return list(cands)
+
+
+def _rerank(strategy, query, cands, top_k=10):
     ids = list(cands)
     if strategy in ("fanout", "cot"):
         p = Predict(fanout_sig(cands))(query_excerpt=query)
