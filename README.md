@@ -146,7 +146,28 @@ Every prompting trick that works on an LLM is a way of putting more useful text 
 
 <!-- BBH -->
 
-<!-- LEGALBENCH -->
+### LegalBench: rule application on a public benchmark
+
+[LegalBench](https://hazyresearch.stanford.edu/legalbench/) (Guha et al., NeurIPS 2023) has tasks where the answer is a statute applied to facts: *diversity jurisdiction* holds when the parties are completely diverse **and** the amount in controversy exceeds $75,000; *hearsay* is an out-of-court statement **and** offered for its truth; *personal jurisdiction* is domicile **or** (minimum contacts **and** a claim arising from them). The sub-conditions are exactly the intermediate answers a chain needs, and the six diversity variants ship gold labels for both sub-conditions. [`bench/legalbench`](bench/legalbench/run.mjs), all test rows, accuracy with balanced accuracy in parentheses:
+
+| task | n | plain Jev | `refine` | `chain` (sub-conditions → conclusion) | `code` (sub-conditions → rule in code) | GPT-4 · GPT-3.5 · Claude-1 (LegalBench paper, balanced acc.) |
+| --- | --- | --- | --- | --- | --- | --- |
+| diversity_1 | 300 | 100% | 100% | 100% | 100% | — |
+| diversity_2 | 300 | 100% | 100% | 100% | 100% | — |
+| diversity_3 | 300 | 93.0% (91.5) | 92.7% | 93.7% (92.3) | 93.0% (92.8) | — |
+| diversity_4 | 300 | 94.0% (93.6) | 95.0% | 94.3% (93.9) | 93.7% (93.2) | — |
+| diversity_5 | 300 | 72.3% (74.5) | 72.0% | **87.3% (86.4)** | **89.7% (88.3)** | 76.6 · 66.7 · 36.7 |
+| diversity_6 | 300 | 79.7% (78.4) | 80.7% | **88.7% (87.9)** | **90.3% (89.7)** | 80.0 · 6.7 · 53.3 |
+| hearsay | 94 | 78.7% (76.7) | 77.7% | **87.2% (87.3)** | **87.2% (87.6)** | 75.5 · 55.3 · 68.1 |
+| personal_jurisdiction | 50 | 86.0% (86.6) | 88.0% | **92.0% (92.4)** | **92.0% (92.4)** | 94.0 · 68.0 · 70.0 |
+| calls / item · cost, all 2,144 rows | | 1 · $0.04 | 2 · $0.08 | 2 · $0.09 | 1 · $0.05 | |
+
+Three things to read off this table:
+
+- **The gain is where the structure is.** diversity_1–4 are one plaintiff, one defendant, few claims: plain Jev is at or near ceiling and nothing moves. diversity_5 and 6 add parties and claims that must not be aggregated, and the chain adds 15 and 9 points; hearsay adds 8.5; personal jurisdiction 6. `refine` alone (the draft fed back, no new questions) adds nothing anywhere, the same as on MMLU-Pro: the second call needs new facts in it, not the old answer.
+- **Once the facts are typed, code can apply the rule.** `code` asks the same sub-condition questions and applies the statute in JavaScript (`diverse && amount_ok`) for one call. It matches or beats the chain, which is TypeSafe's own recommendation ("code for exact computation, Jev for judgment"). The chain is for rules you cannot or do not want to write as code; the sub-condition table shows both read the facts equally well (diversity_5: parties 86%, amount 98%).
+- **Against the LLMs in the LegalBench paper**, Jev with a two-call chain scores above the paper's GPT-4 figure on diversity_5 (86.4 vs 76.6 balanced), diversity_6 (87.9 vs 80.0) and hearsay (87.3 vs 75.5), and below it on personal jurisdiction (92.4 vs 94.0), for about $0.00004 per call. Those GPT-4 numbers are the paper's 2023 measurements with its prompts, not a fresh run; they are quoted for scale, not as a controlled comparison.
+
 
 ## Reproduce
 

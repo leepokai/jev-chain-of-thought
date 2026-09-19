@@ -72,7 +72,8 @@ for (const task of Object.keys(data)) {
   const items = data[task].slice(0, N), row = { task, n: items.length };
   for (const name of Object.keys(STRATEGIES)) {
     const rs = R[task]?.[name]; if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
-    row[name] = pct(items.filter((it, i) => rs[i].answer === it.answer).length / items.length);
+    const rec = (cls) => { const c = items.filter((it) => it.answer === cls); return c.length ? c.filter((it) => rs[items.indexOf(it)].answer === cls).length / c.length : 1; };
+    row[name] = `${pct(items.filter((it, i) => rs[i].answer === it.answer).length / items.length)} (bal. ${pct((rec("Yes") + rec("No")) / 2)})`;  // accuracy (balanced accuracy, the paper's metric)
   }
   rows.push(row);
   if ("parties_are_diverse" in items[0]) for (const name of ["chain", "code"]) {  // diversity ships gold for both sub-conditions
