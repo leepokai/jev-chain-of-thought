@@ -115,7 +115,19 @@ Plain Jev averages 91.3% with one call and no reasoning (options as criteria) an
 
 TypeSafe's [re-ranking cookbook](https://docs.typesafe.ai/cookbooks/rerank_typesafe) scores 40 legal queries against a BM25 shortlist of 30 passages with one `noul` per pair (30 calls per query) and reports top-1 18%, top-5 35%, top-10 62% on jev-1.12. [`benchmarks/clerc.py`](benchmarks/clerc.py) rebuilds that slice exactly (BM25 alone: 5 / 15 / 38, as in the cookbook) plus the other 110 pooled rows, and tries three formulations that need one or two calls per query: *fanout* (the query as state, each candidate inside its own isolated noul), *listwise* (one `choice` over the 30 ids), and *cot* (fanout, then listwise over the top 10 with the fanout scores as established facts).
 
-<!-- CLERC-TABLE -->
+| subset | method | calls / query | top-1 | top-5 | top-10 | MRR |
+| --- | --- | --- | --- | --- | --- | --- |
+| cookbook 40 | BM25 only | 0 | 5.0 | 15.0 | 37.5 | 0.155 |
+| cookbook 40 | TypeSafe cookbook, jev-1.12, one noul per pair | 30 | 18 | 35 | 62 | — |
+| cookbook 40 | fanout (one call, 30 isolated nouls) | 1 | 30.0 | 55.0 | 65.0 | 0.416 |
+| cookbook 40 | listwise (one choice over 30 ids) | 1 | 32.5 | 60.0 | **85.0** | **0.437** |
+| cookbook 40 | cot (fanout → listwise over the top 10 with the scores as facts) | 2 | 32.5 | 47.5 | 65.0 | 0.412 |
+| all 150 | BM25 only | 0 | 4.7 | 19.3 | 28.7 | 0.142 |
+| all 150 | fanout | 1 | 26.0 | 54.0 | 68.0 | 0.388 |
+| all 150 | listwise | 1 | 24.7 | 56.0 | **77.3** | 0.394 |
+| all 150 | cot | 2 | 26.7 | 56.7 | 68.0 | **0.398** |
+
+One call per query matches or beats the cookbook's thirty (the first pass measured the cookbook's own pointwise method on jev-1.13 at MRR 0.378 on the 150 queries; a paired bootstrap put every one-call variant within noise of it). Most of the jump over the published 18 / 35 / 62 is the model version, not the formulation; what the formulation buys is the cost: 3% of the calls and about half the tokens.
 
 ### Automatic prompt optimization
 

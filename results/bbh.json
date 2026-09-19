@@ -1,0 +1,1503 @@
+{
+ "boolean_expressions": {
+  "direct": {
+   "acc": 98.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014448000000000002
+  },
+  "role": {
+   "acc": 98.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015036000000000001
+  },
+  "emotion": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015456000000000003
+  },
+  "zs-cot": {
+   "acc": 99.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014868000000000001
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015414000000000003
+  },
+  "fewshot": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0038808000000000007
+  },
+  "fewshot-cot": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0038808000000000007
+  },
+  "manyshot": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.011130000000000001
+  },
+  "knn": {
+   "acc": 97.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0020496000000000004
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.02,
+   "cost": 0.0030555840000000005
+  },
+  "cove": {
+   "acc": 100.0,
+   "calls_per_item": 3.0,
+   "cost": 0.004636800000000001
+  },
+  "s2a": {
+   "acc": 98.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0014448000000000002
+  }
+ },
+ "causal_judgement": {
+  "direct": {
+   "acc": 67.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023083200000000004
+  },
+  "role": {
+   "acc": 68.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023671200000000003
+  },
+  "emotion": {
+   "acc": 69.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0024091200000000003
+  },
+  "zs-cot": {
+   "acc": 68.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023503200000000004
+  },
+  "reread": {
+   "acc": 70.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0032810400000000003
+  },
+  "fewshot": {
+   "acc": 66.0,
+   "calls_per_item": 1.0,
+   "cost": 0.006063120000000001
+  },
+  "fewshot-cot": {
+   "acc": 66.0,
+   "calls_per_item": 1.0,
+   "cost": 0.006063120000000001
+  },
+  "manyshot": {
+   "acc": 69.0,
+   "calls_per_item": 0.99,
+   "cost": 0.058378950000000006
+  },
+  "knn": {
+   "acc": 71.0,
+   "calls_per_item": 1.0,
+   "cost": 0.005476296
+  },
+  "refine": {
+   "acc": 67.0,
+   "calls_per_item": 2.0,
+   "cost": 0.004751040000000001
+  },
+  "cove": {
+   "acc": 70.0,
+   "calls_per_item": 3.0,
+   "cost": 0.007227360000000001
+  },
+  "s2a": {
+   "acc": 52.0,
+   "calls_per_item": 2.0,
+   "cost": 0.008246742000000001
+  }
+ },
+ "date_understanding": {
+  "direct": {
+   "acc": 90.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0022612380000000005
+  },
+  "role": {
+   "acc": 90.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023200380000000004
+  },
+  "emotion": {
+   "acc": 90.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023620380000000003
+  },
+  "zs-cot": {
+   "acc": 91.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0023032380000000004
+  },
+  "reread": {
+   "acc": 92.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0027794760000000003
+  },
+  "permute": {
+   "acc": 91.0,
+   "calls_per_item": 3.0,
+   "cost": 0.006783714000000001
+  },
+  "fewshot": {
+   "acc": 89.0,
+   "calls_per_item": 1.0,
+   "cost": 0.005066838000000001
+  },
+  "fewshot-cot": {
+   "acc": 89.0,
+   "calls_per_item": 1.0,
+   "cost": 0.005066838000000001
+  },
+  "manyshot": {
+   "acc": 88.0,
+   "calls_per_item": 1.0,
+   "cost": 0.033496638
+  },
+  "knn": {
+   "acc": 90.0,
+   "calls_per_item": 1.0,
+   "cost": 0.004147248000000001
+  },
+  "refine": {
+   "acc": 90.0,
+   "calls_per_item": 2.0,
+   "cost": 0.004774476000000001
+  },
+  "cove": {
+   "acc": 89.0,
+   "calls_per_item": 3.0,
+   "cost": 0.006918114000000001
+  },
+  "s2a": {
+   "acc": 15.0,
+   "calls_per_item": 2.0,
+   "cost": 0.0049397040000000005
+  }
+ },
+ "disambiguation_qa": {
+  "direct": {
+   "acc": 80.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0019105800000000003
+  },
+  "role": {
+   "acc": 78.0,
+   "calls_per_item": 1.0,
+   "cost": 0.00196938
+  },
+  "emotion": {
+   "acc": 79.0,
+   "calls_per_item": 1.0,
+   "cost": 0.00201138
+  },
+  "zs-cot": {
+   "acc": 81.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0019525800000000002
+  },
+  "reread": {
+   "acc": 82.0,
+   "calls_per_item": 1.0,
+   "cost": 0.00222936
+  },
+  "permute": {
+   "acc": 80.0,
+   "calls_per_item": 3.0,
+   "cost": 0.005731740000000001
+  },
+  "fewshot": {
+   "acc": 84.0,
+   "calls_per_item": 1.0,
+   "cost": 0.006001380000000001
+  },
+  "fewshot-cot": {
+   "acc": 84.0,
+   "calls_per_item": 1.0,
+   "cost": 0.006001380000000001
+  },
+  "manyshot": {
+   "acc": 86.0,
+   "calls_per_item": 1.0,
+   "cost": 0.022977780000000003
+  },
+  "knn": {
+   "acc": 85.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0031658340000000006
+  },
+  "refine": {
+   "acc": 80.0,
+   "calls_per_item": 2.0,
+   "cost": 0.004014360000000001
+  },
+  "cove": {
+   "acc": 80.0,
+   "calls_per_item": 3.0,
+   "cost": 0.0059165400000000005
+  },
+  "s2a": {
+   "acc": 25.0,
+   "calls_per_item": 1.97,
+   "cost": 0.00416619
+  }
+ },
+ "formal_fallacies": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.001288854
+  },
+  "role": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0013282500000000002
+  },
+  "emotion": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.00135639
+  },
+  "zs-cot": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0013169940000000002
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0016575300000000002
+  },
+  "fewshot": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0026817840000000004
+  },
+  "fewshot-cot": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0026817840000000004
+  },
+  "manyshot": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.023097354000000004
+  },
+  "knn": {
+   "acc": 100.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0026186160000000003
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 2.0,
+   "cost": 0.00267057
+  },
+  "cove": {
+   "acc": 100.0,
+   "calls_per_item": 3.0,
+   "cost": 0.00406917
+  },
+  "s2a": {
+   "acc": 91.04,
+   "calls_per_item": 2.0,
+   "cost": 0.0036172920000000007
+  }
+ },
+ "geometric_shapes": {
+  "direct": {
+   "acc": 72.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0027928740000000003
+  },
+  "role": {
+   "acc": 71.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0028516740000000002
+  },
+  "emotion": {
+   "acc": 70.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0028936740000000006
+  },
+  "zs-cot": {
+   "acc": 71.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0028348740000000002
+  },
+  "reread": {
+   "acc": 76.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0034185480000000004
+  },
+  "permute": {
+   "acc": 72.0,
+   "calls_per_item": 3.0,
+   "cost": 0.008378622
+  },
+  "fewshot": {
+   "acc": 73.0,
+   "calls_per_item": 1.0,
+   "cost": 0.012347874000000002
+  },
+  "fewshot-cot": {
+   "acc": 73.0,
+   "calls_per_item": 1.0,
+   "cost": 0.012347874000000002
+  },
+  "manyshot": {
+   "acc": 84.0,
+   "calls_per_item": 1.0,
+   "cost": 0.040412274000000005
+  },
+  "knn": {
+   "acc": 77.0,
+   "calls_per_item": 1.0,
+   "cost": 0.004863936000000001
+  },
+  "refine": {
+   "acc": 72.0,
+   "calls_per_item": 2.0,
+   "cost": 0.005984748000000001
+  },
+  "cove": {
+   "acc": 74.0,
+   "calls_per_item": 3.0,
+   "cost": 0.008387022000000001
+  },
+  "s2a": {
+   "acc": 72.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0027928740000000003
+  }
+ },
+ "hyperbaton": {
+  "direct": {
+   "acc": 98.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0015587040000000002
+  },
+  "role": {
+   "acc": 99.0,
+   "calls_per_item": 1.0,
+   "cost": 0.0016175040000000003
+  },
+  "emotion": {
+   "acc": 98.0,
+   "calls_per_item": 0.3,
+   "cost": 0.0004966920000000001
+  },
+  "zs-cot": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "logical_deduction_three_objects": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 33.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "logical_deduction_five_objects": {
+  "direct": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 22.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "logical_deduction_seven_objects": {
+  "direct": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 87.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 94.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 96.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 18.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "movie_recommendation": {
+  "direct": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 88.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "navigate": {
+  "direct": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 94.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "penguins_in_a_table": {
+  "direct": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 94.79,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 86.46,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 92.71,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 94.79,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 93.75,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 26.04,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "reasoning_about_colored_objects": {
+  "direct": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 19.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "ruin_names": {
+  "direct": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 92.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "salient_translation_error_detection": {
+  "direct": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 79.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 81.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 81.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 81.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 81.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 79.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 79.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 14.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "snarks": {
+  "direct": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 93.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 85.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "sports_understanding": {
+  "direct": {
+   "acc": 88.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 88.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 94.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 89.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 90.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 87.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "temporal_sequences": {
+  "direct": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 23.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "tracking_shuffled_objects_three_objects": {
+  "direct": {
+   "acc": 95.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 99.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 98.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 94.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 95.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 88.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 91.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 97.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 95.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 32.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "tracking_shuffled_objects_five_objects": {
+  "direct": {
+   "acc": 84.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 85.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 85.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 86.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 82.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 84.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 77.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 78.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 83.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 81.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 23.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "tracking_shuffled_objects_seven_objects": {
+  "direct": {
+   "acc": 83.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 80.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 84.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 85.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 77.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "permute": {
+   "acc": 83.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 78.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 78.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 74.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 75.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 83.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 79.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 17.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ },
+ "web_of_lies": {
+  "direct": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "role": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "emotion": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "zs-cot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "reread": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "fewshot-cot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "manyshot": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "knn": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "refine": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "cove": {
+   "acc": 100.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  },
+  "s2a": {
+   "acc": 79.0,
+   "calls_per_item": 0.0,
+   "cost": 0.0
+  }
+ }
+}
