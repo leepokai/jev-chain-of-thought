@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { ask, refine, chain, pmap, label } from "../../src/index.js";
 import { cache, table, pct, PRICE } from "../lib.mjs";
+import { TECHNIQUES, SINGLE_CALL, neighbours, vote } from "../techniques.mjs";
 
 const MODEL = process.env.MODEL ?? "jev-1.13.0", C = +(process.env.C || 12), N = process.env.N ? +process.env.N : Infinity;
 const data = JSON.parse(readFileSync(new URL("../data/legalbench.json", import.meta.url)));
@@ -38,9 +39,11 @@ const RULES = {
 const ruleFor = (task) => RULES[task.replace(/_\d$/, "")];
 const withRule = (q, rule) => ({ ...q, instructions: { ...q.instructions, rule } });
 
+let pool = [];  // the current task's rows, for exemplars (fixed: the next five rows) and knn (nearest five), both leave-one-out
+const ctxFor = (text) => { const others = pool.filter((it) => it.text !== text).map((it) => ({ question: it.text, answer: it.answer, wrong: it.answer === "Yes" ? "No" : "Yes" }));
+  const i = pool.findIndex((it) => it.text === text); return { exemplars: Array.from({ length: 5 }, (_, k) => others[(i + k) % others.length]), neighbours: neighbours(others, text, 5), role: "You are a careful US law professor applying the rule exactly as stated." }; };
 const STRATEGIES = {
-  direct: async (task, text) => { const { rule, final } = ruleFor(task); return refine({ facts: text }, { answer: withRule(final, rule) }, { rounds: 0, ...opts }); },
-  refine: async (task, text) => { const { rule, final } = ruleFor(task); return refine({ facts: text }, { answer: withRule(final, rule) }, { rounds: 1, ...opts }); },
+  ...Object.fromEntries(Object.entries(TECHNIQUES).filter(([n]) => n !== "fewshot-cot").map(([name, fn]) => [name, (task, text) => { const { rule, final } = ruleFor(task); return fn({ facts: text }, { answer: withRule(final, rule) }, opts, ctxFor(text)); }])),
   chain: async (task, text) => { const { rule, final, steps } = ruleFor(task);
     return chain({ facts: text }, [Object.fromEntries(Object.entries(steps).map(([k, q]) => [k, withRule(q, rule)])), { answer: withRule(final, rule) }], opts); },
   code: async (task, text) => { const { rule, steps, code } = ruleFor(task);  // program-of-thought: Jev finds the facts, code applies the rule
@@ -52,7 +55,7 @@ const want = process.argv[2] && process.argv[2] !== "all" ? process.argv[2].spli
 const { c: R, save } = cache(new URL("../results/legalbench.json", import.meta.url));
 
 for (const task of Object.keys(data)) {
-  const items = data[task].slice(0, N); R[task] ??= {};
+  const items = data[task].slice(0, N); R[task] ??= {}; pool = items;
   for (const name of want) {
     R[task][name] ??= {};
     const todo = items.map((it, i) => [it, i]).filter(([, i]) => !R[task][name][i]);
@@ -70,8 +73,9 @@ for (const task of Object.keys(data)) {
 const rows = [], sub = [];
 for (const task of Object.keys(data)) {
   const items = data[task].slice(0, N), row = { task, n: items.length };
-  for (const name of Object.keys(STRATEGIES)) {
-    const rs = R[task]?.[name]; if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
+  for (const name of [...Object.keys(STRATEGIES), "vote"]) {
+    const rs = name === "vote" ? Object.fromEntries(items.map((_, i) => { const cs = SINGLE_CALL.map((n) => R[task]?.[n]?.[i]?.answer); return cs.filter(Boolean).length >= 3 ? [i, { answer: vote(cs), calls: 0, input: 0 }] : [i, null]; })) : R[task]?.[name];
+    if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
     const rec = (cls) => { const c = items.filter((it) => it.answer === cls); return c.length ? c.filter((it) => rs[items.indexOf(it)].answer === cls).length / c.length : 1; };
     row[name] = `${pct(items.filter((it, i) => rs[i].answer === it.answer).length / items.length)} (bal. ${pct((rec("Yes") + rec("No")) / 2)})`;  // accuracy (balanced accuracy, the paper's metric)
   }
@@ -82,7 +86,7 @@ for (const task of Object.keys(data)) {
       aic_is_met: pct(items.filter((it, i) => rs[i].steps.aic_is_met === it.aic_is_met).length / items.length), "both sub-conditions": pct(items.filter((it, i) => rs[i].steps.parties_are_diverse === it.parties_are_diverse && rs[i].steps.aic_is_met === it.aic_is_met).length / items.length) });
   }
 }
-const calls = Object.fromEntries(Object.keys(STRATEGIES).map((n) => { const all = Object.keys(data).flatMap((t) => Object.values(R[t]?.[n] ?? {})); return [n, all.length ? `${(all.reduce((s, r) => s + r.calls, 0) / all.length).toFixed(2)} calls, $${(all.reduce((s, r) => s + r.input, 0) * PRICE).toFixed(2)}` : ""]; }));
+const calls = Object.fromEntries([...Object.keys(STRATEGIES), "vote"].map((n) => { const all = Object.keys(data).flatMap((t) => Object.values(R[t]?.[n] ?? {})); return [n, all.length ? `${(all.reduce((s, r) => s + r.calls, 0) / all.length).toFixed(2)} calls, $${(all.reduce((s, r) => s + r.input, 0) * PRICE).toFixed(2)}` : ""]; }));
 rows.push({ task: "calls / item, cost", n: "", ...calls });
 const md = `# LegalBench rule-application tasks (model ${MODEL})\n\n${table(rows)}\n${sub.length ? `\nSub-condition accuracy on the diversity tasks (gold shipped with the dataset):\n\n${table(sub)}\n` : ""}`;
 console.log("\n" + md); if (!process.env.N) writeFileSync(new URL("../results/legalbench.md", import.meta.url), md);

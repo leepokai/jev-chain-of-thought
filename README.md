@@ -1,6 +1,6 @@
-# jev-chain-of-thought
+# LLM prompt techniques on Jev
 
-**Chain-of-thought and self-refinement for [TypeSafe's Jev](https://typesafe.ai). Feed Jev's typed answers back as state and ask again.**
+**Every LLM prompting technique that can be translated for a model that never generates text, translated for [TypeSafe's Jev](https://typesafe.ai) and measured on BIG-Bench Hard, LegalBench, MMLU-Pro and CLERC.** Package: `npm install llm-prompt-techniques-on-jev` — `refine`, `chain`, `choose`, `rerank`, zero dependencies.
 
 Jev is a *System One* model: it never generates text, it answers typed questions (`choice`, `noul`, `score`) about a `state` and returns calibrated probabilities. That makes it 100× cheaper than an LLM judge, but it also means it has no scratchpad. Every question in a request is scored on its own; a question cannot see what Jev answered to the question next to it, and Jev cannot revise an answer after seeing its own first draft.
 
@@ -20,6 +20,8 @@ Three benchmarks, one model (`jev-1.13.0`, September 2026), every Jev response c
 | --- | --- | --- | --- | --- |
 | **Dependent rubric** — 100 transaction memos, 3 questions where `requires_review` depends on `risk_level` ([details](bench/results/synthetic.md)) | 74% all-3-correct | **93%** (`chain` + `refine`) | 3.1 / doc | the questions can finally see each other's answers |
 | **CLERC legal re-ranking** — TypeSafe's own cookbook, replicated exactly ([details](bench/results/clerc-150.md)) | top-1 23% · MRR 0.378 · **30 calls/query** (the cookbook's method) | top-1 27% · MRR 0.402 · **2 calls/query** (`rerank`, fanout + listwise) | 7% of the calls, 72% of the tokens | same or better ranking at a fraction of the cost; the accuracy gain itself is within noise at n=150 |
+| **LegalBench rule application** — diversity jurisdiction, hearsay, personal jurisdiction, 2,144 rows ([details](bench/results/legalbench.md)) | diversity_5 72.3% · hearsay 78.7% | **87.3% · 87.2%** (`chain`: ask the statute's sub-conditions first) | 2 / row | above the GPT-4 correctness the LegalBench paper reports on three of four tasks |
+| **BIG-Bench Hard** — 23 option-answer tasks, 5,571 items ([details](bench/results/bbh.md)) | **91.8%** mean, one call | 92.0% (best of 13 techniques and 5 typed chains) | 1–7 / item | the chain-of-thought benchmark needs no chain-of-thought from Jev; few-shot exemplars fix the one task about label semantics (70 → 85) |
 | **MMLU-Pro** — full test set, 12,032 questions ([details](bench/results/mmlu-pro-all.md), 7 strategies on a 700-question sample [here](bench/results/mmlu-pro-700.md)) | **82.8%** (ECE 0.048, $0.29 for the whole set) | 82.9% (nothing beats plain Jev) | 1–3 / q | atomic knowledge questions have no intermediate answers to feed back |
 
 The pattern: **feeding answers back helps exactly when one answer depends on another.** In a single Jev request every question is scored in isolation ([TypeSafe's own parallel-questions cookbook](https://docs.typesafe.ai/cookbooks/parallel_questions) shows batching "adds no noise" precisely because questions never see each other). A rubric whose review flag depends on the risk level, or a ranking whose listwise pick benefits from pointwise scores, gains from a second pass. A ten-option physics question does not.
@@ -79,7 +81,7 @@ Per category, full set, plain Jev: biology 91.6 · economics 88.4 · computer sc
 ## Install
 
 ```bash
-npm install jev-chain-of-thought
+npm install llm-prompt-techniques-on-jev
 export JEV_API_KEY=…        # or TYPESAFE_API_KEY, or `jev-guard key <key>`
 ```
 
@@ -88,7 +90,7 @@ Node ≥ 20.3. No dependencies. Works with the TypeSafe API directly (`POST http
 ## Use
 
 ```js
-import { ask, refine, chain, choose, rerank } from "jev-chain-of-thought";
+import { ask, refine, chain, choose, rerank } from "llm-prompt-techniques-on-jev";
 
 // plain Jev
 const { answers } = await ask(memo, questions);
@@ -144,7 +146,35 @@ Every prompting trick that works on an LLM is a way of putting more useful text 
 | Tree of thoughts / beam search | TypeSafe's [hierarchical-classification cookbook](https://docs.typesafe.ai/cookbooks/hierarchical_classification) already does beam search over `choice` probabilities; not duplicated here | — |
 | Retrieval augmentation | out of scope; it is the one lever left for knowledge questions like MMLU-Pro | — |
 
-<!-- BBH -->
+### BIG-Bench Hard: the chain-of-thought benchmark, without chain-of-thought
+
+[BIG-Bench Hard](https://github.com/suzgunmirac/BIG-Bench-Hard) (Suzgun et al. 2022) is the suite where chain-of-thought prompting first showed its large effect: 23 tasks on which few-shot LLMs scored below the average human rater until they were prompted to reason step by step. [`bench/bbh`](bench/bbh/run.mjs) runs every task whose answer is a fixed option set (23 of 27; the four free-text tasks are out), all items, with the official three exemplars from the repo's prompt files ([`bbh.md`](bench/results/bbh.md)):
+
+| task | n | plain Jev | few-shot | few-shot CoT | refine | CoVe | typed chain |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| web_of_lies | 250 | **100%** | 100% | 100% | 100% | 100% | 100% (`lies`, `propagate`) |
+| logical_deduction (3 / 5 / 7 objects) | 750 | **100 / 98.0 / 94.4** | 100 / 98.0 / 93.6 | 100 / 98.4 / 92.8 | 100 / 98.4 / 93.2 | 100 / 98.4 / 93.2 | 100 / 98.0 / 91.2 (`deduction`) |
+| tracking_shuffled_objects (3 / 5 / 7) | 750 | **98.0 / 90.4 / 90.0** | 92.4 / 88.8 / 86.0 | 91.6 / 88.8 / 85.6 | 92.8 / 90.4 / 88.4 | 92.4 / 90.4 / 86.4 | 81.6 / 84.0 / 80.0 (`tracking`) |
+| temporal_sequences | 250 | 99.2% | 99.2% | 99.6% | 99.2% | 99.2% | 99.6% (`temporal`) |
+| boolean_expressions | 250 | 98.8% | 98.8% | 98.8% | 98.8% | 98.8% | |
+| navigate | 250 | 98.0% | 98.8% | 98.4% | 98.4% | 98.4% | |
+| date_understanding | 250 | 92.4% | 89.6% | 90.0% | 92.8% | 92.8% | |
+| disambiguation_qa | 250 | 70.4% | 83.6% | **84.8%** | 80.4% | 82.0% | |
+| causal_judgement | 187 | 66.8% | 63.6% | 63.6% | 67.4% | 66.8% | |
+| salient_translation_error_detection | 250 | 78.8% | 79.2% | 76.8% | 77.6% | 77.6% | |
+| geometric_shapes | 250 | 80.4% | 80.4% | 80.8% | 80.0% | 80.0% | |
+| **mean over all 23 tasks** | 5,571 | **91.8%** | 91.6% | 91.5% | 92.0% | 91.8% | |
+| calls / item | | 1 | 1 | 1 | 2 | 3 | 2–7 |
+
+(The other eleven tasks sit between 88% and 100% for every column; see the full table.)
+
+Two findings, one of them a surprise:
+
+- **Plain Jev already scores 91.8% on BBH with one call and no reasoning.** The tasks that chain-of-thought was invented for, multi-step state tracking, propagating truth values through a chain of liars, ordering constraints, are at or near 100% without any scaffold. Whatever RLCD training did, it internalised the procedure. Every typed chain we built on the problem structure is neutral or *worse*: stepping through the swaps one call at a time drops tracking from 90–98% to 80–84%, because each step's answer becomes a new place to make an error and the model was already solving the whole thing in one read. Whether BBH items were in Jev's training data cannot be ruled out from outside (the files carry the BIG-bench canary string, which is meant to keep them out of corpora); the numbers are reported as measured.
+- **The one task that moves is the one that is about reading the prompt.** disambiguation_qa (which noun a pronoun refers to, or whether it is ambiguous) goes from 70.4% to 84.8% with the three worked exemplars in the instructions, and to 80.4% with a plain self-refine pass. That is a task-definition problem, not a reasoning one: the exemplars show what "ambiguous" means in this dataset. Few-shot examples help Jev where they help an LLM: when the label semantics are not obvious from the question alone.
+
+For reference, the BBH paper's few-shot CoT numbers for the strongest model of 2022 (Codex, `code-davinci-002`) average 73.9% over these tasks; human-rater average is 67.7%, best human 94.4%.
+
 
 ### LegalBench: rule application on a public benchmark
 
@@ -172,7 +202,7 @@ Three things to read off this table:
 ## Reproduce
 
 ```bash
-git clone https://github.com/leepokai/jev-chain-of-thought && cd jev-chain-of-thought
+git clone https://github.com/leepokai/llm-prompt-techniques-on-jev && cd llm-prompt-techniques-on-jev
 npm test                                                   # unit tests, no key needed
 
 # data (Python, once): MMLU-Pro from Hugging Face, CLERC slice rebuilt exactly as TypeSafe's cookbook does

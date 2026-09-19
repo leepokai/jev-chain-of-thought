@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { ask, refine, feedback, pmap } from "../../src/index.js";
 import { cache, table, pct, PRICE } from "../lib.mjs";
+import { TECHNIQUES, SINGLE_CALL, neighbours, vote } from "../techniques.mjs";
 
 const MODEL = process.env.MODEL ?? "jev-1.13.0", C = +(process.env.C || 12), N = process.env.N ? +process.env.N : Infinity;
 const data = JSON.parse(readFileSync(new URL("../data/bbh.json", import.meta.url)));
@@ -31,19 +32,14 @@ function official(task) {
 const Q = (p, extra = {}) => ({ answer: { type: "choice", instructions: { task: official_desc, question: "Which option is correct?", ...extra }, criteria: p.options } });
 let official_desc = "";
 
+// every generic technique sees the same state/questions; exemplars come from the official prompt file, neighbours from the task's other items
+const wrongFor = (question, answer) => { const letters = [...question.matchAll(/^\(([A-Z])\)/gm)].map((m) => `(${m[1]})`).filter((l) => l !== answer);
+  return letters.length ? letters[0] : ({ Yes: "No", No: "Yes", yes: "no", no: "yes", True: "False", False: "True", valid: "invalid", invalid: "valid" })[answer] ?? "(none of the above)"; };
 const one = async (state, qs) => { const r = await ask(state, qs, opts); return { answers: r.answers, trace: [r] }; };
-const GENERIC = {
-  direct: async (p) => one({ question: p.text }, Q(p)),
-  fewshot: async (p, task) => one({ question: p.text }, Q(p, { examples: official(task).examples.map((e) => ({ question: e.question, answer: e.answer })) })),
-  "fewshot-cot": async (p, task) => one({ question: p.text }, Q(p, { examples: official(task).examples.map((e) => ({ question: e.question, worked_solution: e.reasoning })) })),
-  refine: async (p) => refine({ question: p.text }, Q(p), { rounds: 1, ...opts }),
-  cove: async (p) => {  // chain-of-verification: draft → "is the draft right?" → final with both
-    const s = { question: p.text }, d = await ask(s, Q(p), opts);
-    const v = await ask(feedback(s, d.answers), { draft_correct: { type: "noul", instructions: "Is the draft answer correct? Check it against the question step by step.", criteria: { true: "The draft answer is correct.", false: "The draft answer is wrong." } } }, opts);
-    const f = await ask(feedback(s, { ...d.answers, draft_check: v.answers.draft_correct }), Q(p), opts);
-    return { answers: f.answers, trace: [d, v, f] };
-  },
-};
+let pool = [];  // the current task's items, for knn (leave-one-out)
+const ctxFor = (p, task) => { const ex = official(task).examples.map((e) => ({ question: e.question, answer: e.answer, worked_solution: e.reasoning, wrong: wrongFor(e.question, e.answer) }));
+  return { exemplars: ex, neighbours: neighbours(pool.filter((x) => x !== p).map((x) => ({ question: x.text, answer: x.gold })), p.text, 5) }; };
+const GENERIC = Object.fromEntries(Object.entries(TECHNIQUES).map(([name, fn]) => [name, (p, task) => fn({ question: p.text }, Q(p), opts, ctxFor(p, task))]));
 const noul = (question, extra = {}) => ({ type: "noul", instructions: { question, ...extra }, criteria: { true: "Yes.", false: "No." } });
 const sentences = (t) => t.split(/(?<=[.?!])\s+/);
 const CHAINS = {
@@ -99,13 +95,19 @@ const CHAINS = {
     return { answers: f.answers, trace: [r, f] };
   },
 };
-const CHAIN_FOR = (task) => task.startsWith("tracking") ? ["tracking"] : task === "web_of_lies" ? ["lies", "propagate"] : task.startsWith("logical_deduction") ? ["deduction"] : task === "temporal_sequences" ? ["temporal"] : [];
+CHAINS.structured = async (p) => {  // chain-of-symbol / structured input: the same question over a parsed JSON state instead of prose
+  const s = sentences(p.text.replace(/^Question:\s*/, ""));
+  const state = /swap|trade|switch/i.test(p.text) ? { setup: s.filter((x) => !/swap|trade|switch/i.test(x) && x !== s.at(-1)).join(" "), swaps_in_order: s.filter((x) => /swap|trade|switch/i.test(x)), question: s.at(-1) }
+    : { statements_in_order: s.slice(0, -1), question: s.at(-1) };
+  return one(state, Q(p));
+};
+const CHAIN_FOR = (task) => task.startsWith("tracking") ? ["tracking", "structured"] : task === "web_of_lies" ? ["lies", "propagate", "structured"] : task.startsWith("logical_deduction") ? ["deduction"] : task === "temporal_sequences" ? ["temporal"] : [];
 const want = process.argv[2] && process.argv[2] !== "all" ? process.argv[2].split(",") : [...Object.keys(GENERIC), ...Object.keys(CHAINS)];
 const { c: R, save } = cache(new URL("../results/bbh.json", import.meta.url));
 
 for (const task of TASKS) {
   official_desc = official(task).desc;
-  const items = data[task].examples.map((ex) => parse(task, ex)).filter((p) => p.gold in p.options).slice(0, N);
+  const items = data[task].examples.map((ex) => parse(task, ex)).filter((p) => p.gold in p.options).slice(0, N); pool = items;
   R[task] ??= {};
   for (const name of want.filter((n) => GENERIC[n] || CHAIN_FOR(task).includes(n))) {
     R[task][name] ??= {};
@@ -122,12 +124,13 @@ for (const task of TASKS) {
 }
 
 // report: tasks × strategies
-const names = [...Object.keys(GENERIC), ...Object.keys(CHAINS)], rows = [], sums = {};
+const names = [...Object.keys(GENERIC), "vote", ...Object.keys(CHAINS)], rows = [], sums = {};
 for (const task of TASKS) {
   const items = data[task].examples.map((ex) => parse(task, ex)).filter((p) => p.gold in p.options).slice(0, N);
   const row = { task, n: items.length };
   for (const name of names) {
-    const rs = R[task]?.[name]; if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
+    const rs = name === "vote" ? Object.fromEntries(items.map((_, i) => { const cs = SINGLE_CALL.map((n) => R[task]?.[n]?.[i]?.choice); return cs.filter(Boolean).length >= 3 ? [i, { choice: vote(cs), calls: 0, input: 0 }] : [i, null]; })) : R[task]?.[name];
+    if (!rs || items.some((_, i) => !rs[i])) { row[name] = ""; continue; }
     const acc = items.filter((p, i) => rs[i].choice === p.gold).length / items.length;
     row[name] = pct(acc); (sums[name] ??= { acc: 0, n: 0, calls: 0, tok: 0, tasks: 0 });
     sums[name].acc += acc; sums[name].tasks++; sums[name].calls += items.reduce((s, _, i) => s + rs[i].calls, 0); sums[name].tok += items.reduce((s, _, i) => s + rs[i].input, 0); sums[name].n += items.length;

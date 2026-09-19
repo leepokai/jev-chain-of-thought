@@ -3,6 +3,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { choose, pmap, top } from "../../src/index.js";
 import { cache, shuffle, table, pct, PRICE } from "../lib.mjs";
+import { TECHNIQUES, SINGLE_CALL, neighbours, vote } from "../techniques.mjs";
+const val = JSON.parse(readFileSync(new URL("../data/mmlu_pro_val.json", import.meta.url)));  // 5 CoT exemplars per category
 
 const MODEL = process.env.MODEL ?? "jev-1.13.0", C = +(process.env.C || 12), N = process.env.N ?? "420";
 const all = JSON.parse(readFileSync(new URL("../data/mmlu_pro.json", import.meta.url)));
@@ -20,9 +22,13 @@ const STRATEGIES = {
   cot: { strategy: "cot", k: 3 },                       // 2 calls: verify's first call, then narrow's second
   product: { strategy: "product" },                     // 1 call: listwise choice × per-option nouls, multiplied (ensemble of two views, no feedback)
 };
+const letters = "ABCDEFGHIJ";
+const fmt = (q, options) => `${q}\nOptions:\n${options.map((o, i) => `(${letters[i]}) ${o}`).join("\n")}`;
+const ctxFor = (q) => ({ exemplars: val.filter((v) => v.category === q.category).map((v, i) => ({ question: fmt(v.q, v.options), answer: v.answer, worked_solution: v.cot.replace(/^A:\s*/, ""), wrong: letters[(letters.indexOf(v.answer) + 1 + i) % v.options.length] })),
+  neighbours: neighbours(byCat[q.category].filter((x) => x.id !== q.id).map((x) => ({ question: fmt(x.q, x.options), answer: x.answer })), q.q, 5), role: `You are a meticulous expert in ${q.category}; answer as the expert would.` });
+for (const [name, fn] of Object.entries(TECHNIQUES)) STRATEGIES[name] ??= { technique: fn };
 const want = process.argv[2] && process.argv[2] !== "all" ? process.argv[2].split(",") : Object.keys(STRATEGIES);
 const { c: R, save } = cache(new URL("../results/mmlu-pro.json", import.meta.url));
-const letters = "ABCDEFGHIJ";
 const options = (q) => Object.fromEntries(q.options.map((o, i) => [letters[i], o]));
 
 for (const name of want) {
@@ -32,7 +38,9 @@ for (const name of want) {
     const t0 = performance.now(); let n = 0;
     let failed = 0;
     await pmap(todo, async (q) => {
-      let r; try { r = await choose({ question: q.q, subject: q.category }, options(q), { ...STRATEGIES[name], instructions: "Which option correctly answers the question?", model: MODEL }); }
+      let r; try { r = STRATEGIES[name].technique
+        ? await STRATEGIES[name].technique({ question: q.q, subject: q.category }, { answer: { type: "choice", instructions: "Which option correctly answers the question?", criteria: options(q) } }, { model: MODEL }, ctxFor(q)).then((x) => ({ choice: x.answers.answer.choice, probabilities: x.answers.answer.probabilities, trace: x.trace, calls: x.trace.length }))
+        : await choose({ question: q.q, subject: q.category }, options(q), { ...STRATEGIES[name], instructions: "Which option correctly answers the question?", model: MODEL }); }
       catch (e) { failed++; if (failed < 5) console.error(`\n${q.id}: ${e.message}`); return; }
       const a0 = r.trace[0].answers, first = a0[`A_correct`] ? { list: a0.answer.probabilities, noul: Object.fromEntries(Object.keys(options(q)).map((o) => [o, a0[`${o}_correct`].p])) } : undefined;
       R[name][q.id] = { choice: r.choice, p: +r.probabilities[r.choice].toFixed(4), calls: r.calls, first, input: r.trace.reduce((s, t) => s + t.usage.input, 0), ms: r.trace.reduce((s, t) => s + t.ms, 0) };
@@ -44,7 +52,8 @@ for (const name of want) {
 }
 
 const cats = Object.keys(byCat).sort(), rows = [], perCat = [];
-for (const name of Object.keys(STRATEGIES)) {
+for (const name of [...Object.keys(STRATEGIES), "vote"]) {
+  if (name === "vote") R.vote = Object.fromEntries(Q.map((q) => { const cs = SINGLE_CALL.map((n) => R[n]?.[q.id]?.choice); return cs.filter(Boolean).length >= 3 ? [q.id, { choice: vote(cs), p: 0, calls: 0, input: 0, ms: 0 }] : [q.id, null]; }));
   if (!Q.every((q) => R[name]?.[q.id])) continue;
   const rs = Q.map((q) => ({ ...R[name][q.id], ok: R[name][q.id].choice === q.answer, cat: q.category }));
   const acc = rs.filter((r) => r.ok).length / rs.length;

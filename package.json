@@ -1,7 +1,7 @@
 {
-  "name": "jev-chain-of-thought",
+  "name": "llm-prompt-techniques-on-jev",
   "version": "0.1.0",
-  "description": "Chain-of-thought and self-refinement for TypeSafe's Jev: feed its typed answers back as state and ask again. Zero dependencies.",
+  "description": "LLM prompting techniques (chain-of-thought, self-refine, few-shot, chain-of-verification, ...) translated for TypeSafe's Jev and measured on BIG-Bench Hard, LegalBench, MMLU-Pro and CLERC. Zero dependencies.",
   "type": "module",
   "main": "src/index.js",
   "exports": {
@@ -20,9 +20,14 @@
   "keywords": [
     "jev",
     "typesafe",
+    "prompting",
     "chain-of-thought",
     "self-refine",
+    "few-shot",
+    "chain-of-verification",
     "system-one",
+    "bbh",
+    "legalbench",
     "mmlu-pro",
     "reranking"
   ],
@@ -30,10 +35,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leepokai/jev-chain-of-thought.git"
+    "url": "git+https://github.com/leepokai/llm-prompt-techniques-on-jev.git"
   },
-  "homepage": "https://github.com/leepokai/jev-chain-of-thought#readme",
-  "bugs": "https://github.com/leepokai/jev-chain-of-thought/issues",
+  "homepage": "https://github.com/leepokai/llm-prompt-techniques-on-jev#readme",
+  "bugs": "https://github.com/leepokai/llm-prompt-techniques-on-jev/issues",
   "publishConfig": {
     "access": "public"
   },
