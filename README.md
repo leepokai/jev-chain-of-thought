@@ -75,7 +75,14 @@ A decomposition that hurt: adding three extra "facet" nouls per pair (same rule?
 | cot (verify + narrow) | 80.3% | 0.838 | 0.067 | 2 |
 | product (listwise × per-option nouls, one call) | 82.3% | 0.867 | 0.073 | 1 |
 
-Every variant lands within ±2 points of plain Jev (one question is 0.14 points). On the **full test set** ([`mmlu-pro-all.md`](bench/results/mmlu-pro-all.md)) plain Jev scores **82.8%** with ECE 0.048 for $0.29 and nine minutes at 6 concurrent calls; the one-call `product` ensemble scores 82.9%, a difference of 12 questions in 12,032. For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
+The thirteen prompting techniques on the same 700 questions ([`mmlu-pro-700.md`](bench/results/mmlu-pro-700.md)):
+
+| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble | permute | few-shot | few-shot CoT | kNN | contrastive | refine | CoVe | vote |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| accuracy | **82.1** | 82.1 | 81.4 | 81.7 | 82.1 | 81.4 | 81.9 | 80.6 | 80.3 | 81.1 | 80.4 | 81.1 | 82.0 | 81.9 |
+| calls / q | 1 | 1 | 1 | 1 | 1 | 3 | 3 | 1 | 1 | 1 | 1 | 2 | 3 | 0 |
+
+Few-shot exemplars (the dataset's own five per-category CoT examples, or five lexical nearest neighbours from the test set) *lower* accuracy by 1–2 points and lower the mean top probability from 0.84 to 0.79: the examples dilute the question. Nothing else moves. Every variant lands within ±2 points of plain Jev (one question is 0.14 points). On the **full test set** ([`mmlu-pro-all.md`](bench/results/mmlu-pro-all.md)) plain Jev scores **82.8%** with ECE 0.048 for $0.29 and nine minutes at 6 concurrent calls; the one-call `product` ensemble scores 82.9%, a difference of 12 questions in 12,032. For reference, an [independent probe](https://archerhume.com/posts/jevs-architecture-unmasked/) reported 84.6% on its own MMLU-Pro sample. `choose()` therefore defaults to `strategy: "direct"`; the other strategies are there for tasks with structure, and for people who want to check for themselves.
 
 Per category, full set, plain Jev: biology 91.6 · economics 88.4 · computer science 87.1 · math 87.1 · psychology 86.7 · physics 83.9 · philosophy 83.8 · health 81.8 · other 81.2 · chemistry 80.0 · business 79.2 · history 78.0 · law 77.3 · engineering 75.6.
 
@@ -177,19 +184,28 @@ Two findings, one of them a surprise:
 
 For reference, the BBH paper reports Codex (`code-davinci-002`) at 56.6% answer-only and 73.9% with few-shot CoT (+16.7) averaged over these tasks; the average human rater is 67.7%, the best 94.4%.
 
-#### The thirteen techniques on the eight BBH tasks finished so far
+#### Thirteen techniques on all 23 BBH tasks
 
-| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble (3) | permute (3) | few-shot | few-shot CoT | kNN few-shot | contrastive | refine | CoVe | vote (9 single-call) |
+Every technique on every item (5,571 × 13, plus an offline majority vote over the nine single-call variants). Full table in [`bbh.md`](bench/results/bbh.md).
+
+| | direct | role | emotion | zs-CoT | re-read | prompt-ensemble (3) | permute (3) | few-shot | few-shot CoT | kNN few-shot | contrastive | refine | CoVe | vote |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| mean over 8 tasks | 88.6 | 88.8 | 88.4 | 88.7 | **89.3** | 88.6 | 88.6 | 89.4 | 89.8 | **90.1** | 89.4 | 89.9 | **90.1** | 88.9 |
+| **mean, 23 tasks** | 91.8 | 91.8 | 91.7 | 91.6 | 91.6 | 91.8 | 91.8 | 91.6 | 91.5 | 91.3 | 91.5 | **92.0** | 91.8 | 91.8 |
 | disambiguation_qa | 70.4 | 70.8 | 69.6 | 71.2 | 72.0 | 70.4 | 70.0 | 83.6 | **84.8** | 83.2 | 82.4 | 80.4 | 82.0 | 72.4 |
-| causal_judgement | 66.8 | 66.8 | 66.3 | 66.8 | 68.4 | 67.4 | 66.8 | 63.6 | 63.6 | 68.4 | 64.7 | 67.4 | 66.8 | 66.3 |
+| tracking_shuffled_objects, 3 objects | 98.0 | 98.8 | 98.0 | 98.8 | 94.0 | 98.4 | 98.0 | 92.4 | 91.6 | 87.2 | 92.4 | 92.8 | 92.4 | 97.6 |
+| tracking_shuffled_objects, 7 objects | 90.0 | 89.6 | 90.0 | 87.6 | 86.0 | 88.4 | 89.2 | 86.0 | 85.6 | 83.6 | 86.0 | 88.4 | 86.4 | 88.4 |
 | date_understanding | 92.4 | 92.8 | 92.4 | 92.0 | **94.0** | 92.8 | 92.4 | 89.6 | 90.0 | 89.6 | 88.8 | 92.8 | 92.8 | 92.8 |
+| causal_judgement | 66.8 | 66.8 | 66.3 | 66.8 | 68.4 | 67.4 | 66.8 | 63.6 | 63.6 | 68.4 | 64.7 | 67.4 | 66.8 | 66.3 |
 | calls / item | 1 | 1 | 1 | 1 | 1 | 3 | 3 | 1 | 1 | 1 | 1 | 2 | 3 | 0 |
+| cost, all 23 tasks | $0.10 | $0.11 | $0.11 | $0.11 | $0.13 | $0.33 | $0.31 | $0.18 | $0.29 | $0.21 | $0.19 | $0.23 | $0.34 | — |
 
-Zero-shot wording tricks (a role, an emotional appeal, "let's think step by step") do nothing for a model that does not generate: ±0.5 points, i.e. noise. Re-reading the question (the state twice) is the only phrasing change with a consistent small gain. The techniques that move a task are the ones that carry *information*: worked exemplars (disambiguation_qa +14), nearest-neighbour exemplars from the same task, and a second pass. Averaging over option orders or instruction framings changes nothing, because Jev is deterministic and its order sensitivity is small on these tasks. Majority vote over nine single-call variants is no better than any one of them.
+What the sweep says, in order of confidence:
 
-
+- **Wording tricks do nothing.** A role, an emotional appeal, "let's think step by step": ±0.3 on the mean, and no task moves by more than noise. A model that reads once and answers has nowhere to put the extra words.
+- **Ensembles do nothing.** Averaging three instruction framings or three option orders reproduces `direct` to the decimal on most tasks. Jev is deterministic and its option-order sensitivity is small here, so there is no variance to average away. Majority vote over nine single-call variants equals any one of them.
+- **Exemplars cut both ways.** They fix the one task whose label semantics are not in the question (disambiguation_qa +14, all four exemplar variants agree), and they *hurt* tasks the model already solves by reading: tracking drops from 98 to 87–92 when three worked examples about *other* shuffles are in the instructions, kNN-retrieved examples being the worst. On BBH the net is −0.2 to −0.5 on the mean. Add exemplars when a task's labels need defining, not by default.
+- **A second pass is the only thing above the baseline on the mean**, and by 0.2 points (`refine` 92.0). It earns that on disambiguation_qa (+10) and loses a little on tracking. Chain-of-verification (three calls) is not better than the two-call refine.
+- **Re-reading is a wash**: +1.6 on date_understanding and +1.6 on causal_judgement, −4 on tracking, 91.6 overall.
 
 ### LegalBench: rule application on a public benchmark
 

@@ -61,7 +61,7 @@ for (const name of [...Object.keys(STRATEGIES), "vote"]) {
   for (const r of rs) { const b = bins[Math.min(9, Math.floor(r.p * 10))]; b.n++; b.p += r.p; b.ok += r.ok; }
   const ece = bins.reduce((s, b) => s + (b.n ? (b.n / rs.length) * Math.abs(b.ok / b.n - b.p / b.n) : 0), 0);
   const tok = rs.reduce((s, r) => s + r.input, 0);
-  rows.push({ strategy: name, accuracy: pct(acc), "mean top-p": (rs.reduce((s, r) => s + r.p, 0) / rs.length).toFixed(3), ECE: ece.toFixed(3),
+  rows.push({ strategy: name, accuracy: pct(acc), "mean top-p": name === "vote" ? "" : (rs.reduce((s, r) => s + r.p, 0) / rs.length).toFixed(3), ECE: name === "vote" ? "" : ece.toFixed(3),
     "calls/q": (rs.reduce((s, r) => s + r.calls, 0) / rs.length).toFixed(2), "tokens/q": Math.round(tok / rs.length), cost: `$${(tok * PRICE).toFixed(2)}`, "s/q": (rs.reduce((s, r) => s + r.ms, 0) / rs.length / 1000).toFixed(2) });
   perCat.push({ strategy: name, ...Object.fromEntries(cats.map((c) => { const x = rs.filter((r) => r.cat === c); return [c, x.length ? pct(x.filter((r) => r.ok).length / x.length) : "-"]; })) });
 }
