@@ -1,4 +1,4 @@
-# BIG-Bench Hard (23 tasks, 100 test items each; model jev-latest via gateway)
+# BIG-Bench Hard (23 tasks, 100 test items each, options as text; model jev-latest via gateway)
 
 | task | n | direct | role | emotion | zs-cot | reread | fewshot | fewshot-cot | manyshot | knn | refine | cove | s2a |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -26,5 +26,5 @@
 | tracking_shuffled_objects_seven_objects | 100 | 83.0 | 80.0 | 84.0 | 85.0 | 77.0 | 78.0 | 78.0 | 74.0 | 75.0 | 83.0 | 79.0 | 17.0 |
 | web_of_lies | 100 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 100.0 | 79.0 |
 | **mean over tasks** |  | 90.6 | 90.6 | 90.7 | 91.1 | 91.2 | 90.4 | 90.4 | 90.2 | 90.4 | 90.8 | 90.5 | 52.4 |
-| calls / item |  | 0.30 | 0.30 | 0.27 | 0.26 | 0.26 | 0.26 | 0.26 | 0.26 | 0.26 | 0.52 | 0.78 | 0.43 |
-| cost, all tasks |  | $0.01 | $0.01 | $0.01 | $0.01 | $0.01 | $0.04 | $0.04 | $0.19 | $0.02 | $0.03 | $0.04 | $0.03 |
+| calls / item |  | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 2.01 | 3.00 | 1.71 |
+| cost, all tasks |  | $0.05 | $0.05 | $0.05 | $0.05 | $0.06 | $0.13 | $0.13 | $0.73 | $0.09 | $0.10 | $0.15 | $0.11 |

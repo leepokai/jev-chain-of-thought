@@ -1,0 +1,26 @@
+{
+  "traces": [],
+  "train": [],
+  "demos": [],
+  "signature": {
+    "instructions": "Clarify the meaning of sentences with ambiguous pronouns by identifying the antecedent of pronouns in given sentences.\n\n## Task Description\nYou will be given a sentence containing a pronoun and asked to identify what the pronoun refers to (its antecedent). You must select from multiple choice options that specify different possible antecedents, or indicate that the reference is ambiguous.\n\n## Guidelines\n\n1. **Analyze the sentence structure and context carefully** to determine what the pronoun most likely refers to.\n\n2. **Consider proximity and grammatical role**: The pronoun often refers to the subject of the sentence (the first noun phrase mentioned), but this is NOT a definitive rule.\n\n3. **Apply the following decision rules**:\n   - When the pronoun is the subject of a subordinate clause after \"that\" (e.g., \"X told Y that he...\"), the pronoun typically refers to the subject of the main clause (X), NOT the object (Y). This is generally NOT ambiguous.\n   - When the pronoun appears in a causal clause with \"because\" and the reason given applies specifically to one party's role or professional obligation, it is NOT ambiguous (e.g., \"The lawyer looked into accusations because he needed to understand the case\" - lawyers professionally need to understand cases, so \"he\" refers to the lawyer).\n   - When context makes it clear whose attribute or action is being discussed (e.g., \"feedback on his stellar performance\" when an employee receives feedback), choose the contextually appropriate referent.\n\n4. **Identify ambiguity in these situations**:\n   - **Possessive pronouns with shared spaces or objects**: When a pronoun refers to something that could plausibly belong to either party (e.g., \"Bailey planned to meet the director at his office\" - both could have offices), this is AMBIGUOUS.\n   - **Temporal or situational constraints that could apply to either party**: When a time-based or situational constraint (like \"being too late\") could reasonably apply to either party and the sentence doesn't clearly indicate which one, this is AMBIGUOUS (e.g., \"The investigator wanted to interview the witness but she was too late\" - either could be too late).\n   - **Actions or states that both parties could plausibly have**: If the pronoun's verb or adjective could sensibly apply to either antecedent without clear contextual preference, mark as ambiguous.\n\n5. **Err on the side of ambiguity**: When there are two plausible interpretations and no strong linguistic or contextual reason to prefer one over the other, choose \"Ambiguous\" rather than defaulting to the subject.\n\n6. **Output format**: Provide only the letter of your choice (A, B, or C) as your answer.\n\n## Key Examples\n- \"The visitor told the teacher that he liked the cake\" → The pronoun \"he\" refers to \"the visitor\" (the subject), NOT ambiguous\n- \"The lawyer looked into illegal accusations against the cashier, because he needed to understand the case\" → Refers to the lawyer (professionally relevant reason), NOT ambiguous\n- \"The investigator wanted to interview the witness in person, but she was too late\" → AMBIGUOUS (either could be too late)\n- \"Bailey planned to meet the director at his office\" → AMBIGUOUS (both could have offices)",
+    "fields": [
+      {
+        "prefix": "Question:",
+        "description": "${question}"
+      },
+      {
+        "prefix": "Answer:",
+        "description": "Which option is correct?"
+      }
+    ]
+  },
+  "lm": null,
+  "metadata": {
+    "dependency_versions": {
+      "python": "3.11",
+      "dspy": "3.3.1",
+      "cloudpickle": "3.1"
+    }
+  }
+}

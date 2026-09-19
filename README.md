@@ -107,7 +107,17 @@ Where the options go is worth 5.8 points; no prompting technique is worth more t
 
 [BIG-Bench Hard](https://github.com/suzgunmirac/BIG-Bench-Hard) is where chain-of-thought prompting first showed its large effect (Codex: 56.6% answer-only → 73.9% with CoT; average human rater 67.7%). [`benchmarks/bbh.py`](benchmarks/bbh.py) runs the 23 option-answer tasks, 100 test items each, with the official three exemplars from the repo's prompt files as the few-shot demos ([`results/bbh.md`](results/bbh.md); [`bbh-criteria.md`](results/bbh-criteria.md) for the criteria formulation).
 
-<!-- BBH-TABLE -->
+| | direct | role | emotion | zs-CoT | re-read | few-shot (3, official) | few-shot CoT | many-shot (50) | kNN (3) | refine | CoVe | S2A |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **mean, 23 tasks** (options in the question text) | 90.6 | 90.6 | 90.7 | 91.1 | **91.2** | 90.4 | 90.4 | 90.2 | 90.4 | 90.8 | 90.5 | 52.4 |
+| disambiguation_qa | 80.0 | 78.0 | 79.0 | 81.0 | 82.0 | 84.0 | 84.0 | **86.0** | 85.0 | 80.0 | 80.0 | 25.0 |
+| tracking_shuffled_objects, 3 objects | 95.0 | 97.0 | **99.0** | 98.0 | 94.0 | 91.0 | 91.0 | 88.0 | 91.0 | 97.0 | 95.0 | 32.0 |
+| causal_judgement | 67.0 | 68.0 | 69.0 | 68.0 | 70.0 | 66.0 | 66.0 | 69.0 | **71.0** | 67.0 | 70.0 | 52.0 |
+| calls / item | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 2 | 3 | 1.7 |
+| cost, 2,300 items | $0.05 | $0.05 | $0.05 | $0.05 | $0.06 | $0.13 | $0.13 | $0.73 | $0.09 | $0.10 | $0.15 | $0.11 |
+| **mean, options as criteria** | **91.3** | | | | | | | | | **91.9** | | |
+
+The typed System 2 Attention module is the one clear failure here: its sentence filter throws away the option lines and the mean collapses to 52%. It is neutral on LegalBench, whose inputs are prose; it should not be pointed at texts where every line is load-bearing.
 
 Plain Jev averages 91.3% with one call and no reasoning (options as criteria) and the mean does not move under any technique except a self-refine pass (+0.6). The tasks chain-of-thought was invented for (object tracking, webs of liars, ordering constraints) are at 86–100% from a single read. What moves individual tasks: exemplars lift disambiguation_qa (a label-definition problem) and lower object tracking (examples about other shuffles distract), exactly as in the first pass.
 
